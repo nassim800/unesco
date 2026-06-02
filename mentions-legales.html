@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Boot immédiat : lang + daltonien + musique préchargée -->
+    <script>
+      (function(){
+        // 1. Langue
+        var l = localStorage.getItem('mcn-lang');
+        if(l === 'en'){ document.documentElement.lang = 'en'; document.documentElement.classList.add('is-english'); }
+        // 2. Daltonien
+        if(localStorage.getItem('mcn-colorblind') === '1') document.documentElement.classList.add('mcn-colorblind');
+        // 3. Musique — play immédiat, seek différé pour éviter le gap entre pages
+        if(localStorage.getItem('mcn-music-on') === '1') {
+          try {
+            var savedTime = parseFloat(localStorage.getItem('mcn-music-time') || '0');
+            var savedAt   = parseFloat(localStorage.getItem('mcn-music-savedAt') || String(Date.now()));
+            var audio = new Audio('nastelbom_chinese-music.mp3');
+            audio.loop    = true;
+            audio.volume  = 0.55;
+            audio.preload = 'auto';
+            function doSeek(){
+              var elapsed = (Date.now() - savedAt) / 1000;
+              var target  = savedTime + elapsed;
+              if(audio.duration && isFinite(audio.duration)) target = target % audio.duration;
+              try { audio.currentTime = target; } catch(e){}
+            }
+            // Jouer IMMÉDIATEMENT (sans attendre canplay) pour éviter le gap
+            var playPromise = audio.play();
+            if(playPromise !== undefined){
+              playPromise.then(function(){
+                // Seek après que le play a démarré
+                if(audio.readyState >= 2){ doSeek(); }
+                else { audio.addEventListener('canplay', doSeek, { once:true }); }
+              }).catch(function(){
+                // Autoplay bloqué — réessayer au premier geste utilisateur
+                var resume = function(){
+                  audio.play().then(doSeek).catch(function(){});
+                  document.removeEventListener('click',   resume);
+                  document.removeEventListener('keydown', resume);
+                };
+                document.addEventListener('click',   resume, { once:true });
+                document.addEventListener('keydown', resume, { once:true });
+              });
+            } else {
+              // Fallback navigateurs anciens
+              if(audio.readyState >= 2){ doSeek(); }
+              else { audio.addEventListener('canplay', doSeek, { once:true }); }
+            }
+            window.__mcnBootAudio = audio;
+          } catch(e) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" as="audio" href="nastelbom_chinese-music.mp3" type="audio/mpeg">
+    <title>Mentions Légales / Legal Notice — M.C.N.</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium_upgrade.css">
+    <link rel="stylesheet" href="mcn_public_refinement.css">
+    <link rel="stylesheet" href="mcn_premium_finish.css">
+    <link rel="stylesheet" href="dynasty_modal_enhance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-premium="mcn">
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <div class="progress-bar" aria-hidden="true"></div>
+    <input type="checkbox" id="daltonien-mode" class="mode-checkbox">
+    <input type="checkbox" id="hamburger-toggle" class="hamburger-toggle">
+    <label for="hamburger-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo"><a href="index.html" class="logo-link" aria-label="Retour à l'accueil"><img src="logo-mcn.png" alt="Logo M.C.N." class="logo-img"></a></div>
+            <div class="color-mode-toggle"><label for="daltonien-mode" class="mode-button mode-normal">Normal</label><label for="daltonien-mode" class="mode-button mode-daltonien">Daltonien</label></div>
+            <label for="hamburger-toggle" class="hamburger-label" aria-label="Ouvrir le menu"><span></span><span></span><span></span></label>
+            <nav aria-label="Navigation principale">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="histoire.html">Histoire</a></li>
+                    <li><a href="architecture.html">Architecture & Sites</a></li>
+                    <li><a href="preservation.html">Préservation & UNESCO</a></li>
+                    <li><a href="visiter.html">Visiter</a></li>
+                    <li><a href="apropos.html">À propos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+        <main id="contenu" class="main-content">
+        <section class="intro-section reveal legal-section" aria-labelledby="legal-title">
+            <h1 id="legal-title"><span class="lang-fr">Mentions Légales</span><span class="lang-en">Legal Notice</span></h1>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">1. Éditeur du site</span><span class="lang-en">1. Publisher</span></strong>
+                <p><span class="lang-fr">Le site « La Grande Muraille de Chine » est un prototype étudiant réalisé dans le cadre de la formation <em>BUT Informatique</em> à l'IUT de Marne-la-Vallée — Université Gustave Eiffel. Il est présenté sous la marque pédagogique <strong>M.C.N.</strong> pour un projet de médiation culturelle et numérique.</span><span class="lang-en">The website “The Great Wall of China” is a student prototype created as part of the <em>BUT Informatique</em> programme at the IUT de Marne-la-Vallée — Université Gustave Eiffel. It is presented under the educational brand <strong>M.C.N.</strong> for a cultural and digital mediation project.</span></p>
+                <p><span class="lang-fr">Responsable de la publication : équipe de projet M.C.N.</span><span class="lang-en">Publication manager: the M.C.N. project team.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">2. Hébergement</span><span class="lang-en">2. Hosting</span></strong>
+                <p><span class="lang-fr">Le site est destiné à être hébergé localement, sur GitHub Pages ou sur une plateforme académique dans le cadre d'un rendu universitaire. Aucune infrastructure commerciale propre au projet n'est exploitée.</span><span class="lang-en">The website is intended to be hosted locally, on GitHub Pages or on an academic platform as part of a university submission. No project-owned commercial infrastructure is operated.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">3. Propriété intellectuelle</span><span class="lang-en">3. Intellectual property</span></strong>
+                <p><span class="lang-fr">La structure, les textes, les éléments graphiques et les développements front-end appartiennent à l'équipe M.C.N. ou sont utilisés à des fins pédagogiques avec autorisation ou licences compatibles. Toute reproduction hors contexte académique nécessite une autorisation préalable.</span><span class="lang-en">The structure, texts, graphic elements and front-end developments belong to the M.C.N. team or are used for educational purposes with permission or compatible licences. Any reproduction outside the academic context requires prior authorisation.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">4. Référence à l'UNESCO</span><span class="lang-en">4. Reference to UNESCO</span></strong>
+                <p><span class="lang-fr">Les références à l'UNESCO et au patrimoine mondial sont utilisées dans un cadre académique, culturel et démonstratif. Ce site n'est pas une plateforme officielle de l'UNESCO et ne représente pas l'organisation.</span><span class="lang-en">References to UNESCO and World Heritage are used in an academic, cultural and demonstrative context. This website is not an official UNESCO platform and does not represent the organisation.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">5. Données et stockage local</span><span class="lang-en">5. Data and local storage</span></strong>
+                <p><span class="lang-fr">Le prototype ne possède pas de base de données serveur. Les préférences de confort, le passeport patrimoine et le carnet de route sont mémorisés localement dans le navigateur via <em>localStorage</em>. Ces informations restent sur l'appareil de l'utilisateur.</span><span class="lang-en">The prototype has no server-side database. Comfort preferences, the heritage passport and the route notebook are remembered locally in the browser through <em>localStorage</em>. This information stays on the user's device.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">6. Contact</span><span class="lang-en">6. Contact</span></strong>
+                <p><span class="lang-fr">Pour toute question relative au projet, vous pouvez contacter l'équipe via la page <a href="apropos.html">À propos</a>.</span><span class="lang-en">For any question about the project, you may contact the team through the <a href="apropos.html">About</a> page.</span></p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column"><h3>Liens utiles</h3><ul><li><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener">Site officiel de l'UNESCO</a></li><li><a href="visiter.html">Planifier sa visite</a></li>
+                    <li><a href="apropos.html">L’équipe M.C.N.</a></li></ul></div>
+            <div class="footer-column"><h3>Informations</h3><ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="politique-confidentialite.html">Politique de confidentialité</a></li></ul></div>
+            <div class="footer-column"><h3>Contact</h3><p style="margin-bottom:12px;font-size:13px;color:#b0b0b0;">Une question sur le projet ou la Muraille ?</p><a href="mailto:contact@muraille-mcn.fr" class="no-arrow" style="text-decoration:none;"><button class="contact-btn">✉️ Nous contacter</button></a></div>
+        </div>
+        <div class="footer-unesco-container"><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener" class="unesco-link no-arrow"><div class="unesco-logo-footer"><span class="unesco-icon">🏛️</span><span class="unesco-text">UNESCO</span></div></a></div>
+        <div class="footer-bottom"><p>© 2026 Projet M.C.N. × UNESCO — Tous droits réservés</p></div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="Retour en haut">↑</a>
+
+    <div class="premium-dock" aria-label="Outils rapides">
+        <button class="dock-btn" type="button" data-command="search" aria-label="Recherche intelligente">⌘</button>
+        <div class="lang-dock-group">
+        <button class="dock-btn lang-btn" type="button" data-lang="fr" aria-label="Passer en français">FR</button>
+        <button class="dock-btn lang-btn" type="button" data-lang="en" aria-label="Switch to English">EN</button>
+      </div>
+        <button class="dock-btn" type="button" data-command="sound" aria-label="Ambiance sonore">♪</button>
+    </div>
+    <div class="command-panel" role="dialog" aria-modal="false" aria-label="Recherche rapide">
+        <div class="command-card">
+            <button class="command-close" type="button" aria-label="Fermer">×</button>
+            <span class="eyebrow">M.C.N. / Recherche curatoriale</span>
+            <h2>Explorer la Muraille en un instant</h2>
+            <input id="smart-search" type="search" placeholder="Essayez : Badaling, riz gluant, UNESCO, Ming..." autocomplete="off">
+            <div class="command-results" aria-live="polite"></div>
+        </div>
+    </div>
+    <div class="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de confidentialité">
+        <div><strong>Expérience immersive</strong><p>Nous utilisons uniquement des préférences locales pour retenir la langue, l'accessibilité et l'ambiance. Aucun traçage publicitaire.</p></div>
+        <button type="button" class="cookie-accept">Accepter l'expérience</button>
+    </div>
+    <script src="main.js"></script>
+    <script src="premium_upgrade.js"></script>
+    <script src="mcn_public_final.js"></script>
+    <script src="mcn_premium_finish.js"></script>
+    <script src="dynasty_deep.js"></script>
+    <script src="lang_fix.js"></script>
+    <script src="mcn_v4_final_patch.js"></script>
+    <script src="mcn_v5_final_patch.js"></script>
+    <script src="mcn_v10.js"></script>
+    <script src="mcn_v11_final_patch.js"></script>
+</body>
+</html>

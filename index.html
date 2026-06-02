@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Boot immédiat : lang + daltonien + musique préchargée -->
+    <script>
+      (function(){
+        // 1. Langue
+        var l = localStorage.getItem('mcn-lang');
+        if(l === 'en'){ document.documentElement.lang = 'en'; document.documentElement.classList.add('is-english'); }
+        // 2. Daltonien
+        if(localStorage.getItem('mcn-colorblind') === '1') document.documentElement.classList.add('mcn-colorblind');
+        // 3. Musique — play immédiat, seek différé pour éviter le gap entre pages
+        if(localStorage.getItem('mcn-music-on') === '1') {
+          try {
+            var savedTime = parseFloat(localStorage.getItem('mcn-music-time') || '0');
+            var savedAt   = parseFloat(localStorage.getItem('mcn-music-savedAt') || String(Date.now()));
+            var audio = new Audio('nastelbom_chinese-music.mp3');
+            audio.loop    = true;
+            audio.volume  = 0.55;
+            audio.preload = 'auto';
+            function doSeek(){
+              var elapsed = (Date.now() - savedAt) / 1000;
+              var target  = savedTime + elapsed;
+              if(audio.duration && isFinite(audio.duration)) target = target % audio.duration;
+              try { audio.currentTime = target; } catch(e){}
+            }
+            // Jouer IMMÉDIATEMENT (sans attendre canplay) pour éviter le gap
+            var playPromise = audio.play();
+            if(playPromise !== undefined){
+              playPromise.then(function(){
+                // Seek après que le play a démarré
+                if(audio.readyState >= 2){ doSeek(); }
+                else { audio.addEventListener('canplay', doSeek, { once:true }); }
+              }).catch(function(){
+                // Autoplay bloqué — réessayer au premier geste utilisateur
+                var resume = function(){
+                  audio.play().then(doSeek).catch(function(){});
+                  document.removeEventListener('click',   resume);
+                  document.removeEventListener('keydown', resume);
+                };
+                document.addEventListener('click',   resume, { once:true });
+                document.addEventListener('keydown', resume, { once:true });
+              });
+            } else {
+              // Fallback navigateurs anciens
+              if(audio.readyState >= 2){ doSeek(); }
+              else { audio.addEventListener('canplay', doSeek, { once:true }); }
+            }
+            window.__mcnBootAudio = audio;
+          } catch(e) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" as="audio" href="nastelbom_chinese-music.mp3" type="audio/mpeg">
+    <meta name="description" content="Découvrez la Grande Muraille de Chine, patrimoine mondial de l'UNESCO. Histoire, architecture, préservation et conseils de visite.">
+    <title>La Grande Muraille de Chine — UNESCO</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium_upgrade.css">
+    <link rel="stylesheet" href="mcn_public_refinement.css">
+    <link rel="stylesheet" href="mcn_premium_finish.css">
+    <link rel="stylesheet" href="dynasty_modal_enhance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-premium="mcn">
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <!-- Barre de progression -->
+    <div class="progress-bar" aria-hidden="true"></div>
+
+    <!-- Toggles globaux -->
+    <input type="checkbox" id="daltonien-mode" class="mode-checkbox">
+    <input type="checkbox" id="hamburger-toggle" class="hamburger-toggle">
+    <label for="hamburger-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" class="logo-link" aria-label="Retour à l'accueil">
+                    <img src="logo-mcn.png" alt="Logo M.C.N." class="logo-img">
+                </a>
+            </div>
+            <div class="color-mode-toggle">
+                <label for="daltonien-mode" class="mode-button mode-normal">Normal</label>
+                <label for="daltonien-mode" class="mode-button mode-daltonien">Daltonien</label>
+            </div>
+            <label for="hamburger-toggle" class="hamburger-label" aria-label="Ouvrir le menu">
+                <span></span><span></span><span></span>
+            </label>
+            <nav aria-label="Navigation principale">
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="active" aria-current="page">Accueil</a></li>
+                    <li><a href="histoire.html">Histoire</a></li>
+                    <li><a href="architecture.html">Architecture & Sites</a></li>
+                    <li><a href="preservation.html">Préservation & UNESCO</a></li>
+                    <li><a href="visiter.html">Visiter</a></li>
+                    <li><a href="apropos.html">À propos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" aria-label="Bannière principale">
+        <video autoplay muted loop playsinline class="hero-video" preload="auto" poster="dramatic-tower.jpg">
+            <source src="muraille.mp4" type="video/mp4">
+        </video>
+        <h1 class="hero-title">La Grande Muraille de Chine</h1>
+        <p class="hero-subtitle">Patrimoine mondial UNESCO</p>
+    </section>
+
+    <main id="contenu" class="main-content">
+        <section class="intro-section reveal">
+            <h2>Introduction à la Grande Muraille de Chine</h2>
+            <p>La Grande Muraille de Chine, immense fortification serpentant à travers montagnes et vallées, est un symbole majeur de l'histoire et de la culture chinoises. Construite pour protéger l'empire, elle témoigne du savoir-faire et de la détermination de ses bâtisseurs. Aujourd'hui encore, elle fascine des millions de visiteurs et demeure un puissant héritage du passé.</p>
+        </section>
+
+        <div class="four-columns">
+            <div class="column-card reveal reveal-delay-1">
+                <img src="histoire.png" alt="Illustration de la Grande Muraille" class="column-image-real">
+                <div class="column-header">Histoire</div>
+                <div class="column-content">
+                    <p>Édifiée sur plus de deux millénaires, la Grande Muraille reflète l'évolution des dynasties chinoises et leur volonté de protéger le territoire.</p>
+                </div>
+            </div>
+            <div class="column-card reveal reveal-delay-2">
+                <img src="architecture.jpg" alt="Architecture et tour de guet de la Grande Muraille" class="column-image-real">
+                <div class="column-header">Architecture & Sites</div>
+                <div class="column-content">
+                    <p>Tours de guet, forteresses et murs s'étendent à travers montagnes et plaines, chaque section offrant un style et un paysage distincts.</p>
+                </div>
+            </div>
+            <div class="column-card reveal reveal-delay-3">
+                <img src="preservation.jpg" alt="Préservation de la Grande Muraille dans la nature" class="column-image-real">
+                <div class="column-header">Préservation & UNESCO</div>
+                <div class="column-content">
+                    <p>Inscrite à l'UNESCO depuis 1987, la Muraille fait l'objet de restaurations continues pour contrer l'érosion, le tourisme et le temps.</p>
+                </div>
+            </div>
+            <div class="column-card reveal reveal-delay-4">
+                <img src="touristes.jpg" alt="Touristes visitant la Grande Muraille" class="column-image-real">
+                <div class="column-header">Visiter</div>
+                <div class="column-content">
+                    <p>Sections restaurées ou portions sauvages : chaque itinéraire offre une expérience unique et des panoramas impressionnants.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="key-numbers reveal">Chiffres clés</div>
+        <div class="numbers-grid">
+            <div class="number-card reveal reveal-delay-1">
+                <div class="number-value">21 196 km</div>
+                <div class="number-label">Longueur totale</div>
+            </div>
+            <div class="number-card reveal reveal-delay-2">
+                <div class="number-value">2 700 ans</div>
+                <div class="number-label">Histoire</div>
+            </div>
+            <div class="number-card reveal reveal-delay-3">
+                <div class="number-value">1987</div>
+                <div class="number-label">Inscription UNESCO</div>
+            </div>
+            <div class="number-card reveal reveal-delay-4">
+                <div class="number-value">10M+</div>
+                <div class="number-label">Visiteurs/an</div>
+            </div>
+        </div>
+
+
+
+        <section class="heritage-command reveal" aria-labelledby="command-title">
+            <div class="command-copy">
+                <span class="eyebrow">Centre de médiation numérique</span>
+                <h2 id="command-title">Une expérience UNESCO pensée comme un musée digital premium</h2>
+                <p>Le site devient un véritable poste de pilotage culturel : parcours de visite, conservation, accessibilité, cartographie et récits historiques sont réunis dans une interface immersive inspirée de l'encre, du jade et de l'or impérial.</p>
+                <div class="command-actions">
+                    <a href="architecture.html" class="premium-cta">Lancer l'exploration 3D</a>
+                    <a href="visiter.html" class="ghost-cta">Composer un itinéraire</a>
+                </div>
+            </div>
+            <div class="command-dashboard" aria-label="Tableau de bord interactif">
+                <div class="dash-card active"><span>Signal UNESCO</span><strong>1987</strong><small>Patrimoine mondial</small></div>
+                <div class="dash-card"><span>Risque érosion</span><strong>42%</strong><small>Sections à surveiller</small></div>
+                <div class="dash-card"><span>Scan LiDAR</span><strong>3D</strong><small>Jumeau numérique</small></div>
+                <div class="dash-card"><span>Accessibilité</span><strong>AA</strong><small>Contraste renforcé</small></div>
+            </div>
+        </section>
+
+        <section class="impact-strip reveal" aria-label="Engagements du projet">
+            <div><strong>International</strong><span>Mode français / anglais intégré</span></div>
+            <div><strong>Inclusif</strong><span>Mode daltonien + contraste premium</span></div>
+            <div><strong>Immersif</strong><span>3D, Street View, Story Map, audio</span></div>
+            <div><strong>Crédible</strong><span>Ton institutionnel et muséal</span></div>
+        </section>
+
+        <section class="oracle-grid reveal" aria-label="Modules interactifs de médiation">
+            <article class="oracle-card is-wide">
+                <span class="eyebrow">Conseiller de visite intelligent</span>
+                <h3>Planificateur express</h3>
+                <p>Choisissez votre profil : le site propose une section adaptée, le niveau d'effort, le meilleur moment et l'expérience à privilégier.</p>
+                <div class="planner-controls" role="group" aria-label="Choisir un profil de visite">
+                    <button class="planner-chip is-active" data-plan="culture">Culture</button>
+                    <button class="planner-chip" data-plan="photo">Photo</button>
+                    <button class="planner-chip" data-plan="famille">Famille</button>
+                    <button class="planner-chip" data-plan="aventure">Aventure</button>
+                </div>
+                <div class="planner-output" aria-live="polite">
+                    <strong>Mutianyu · 1 journée</strong>
+                    <span>Équilibre idéal entre beauté, accessibilité et densité historique. À visiter tôt le matin pour une lumière douce.</span>
+                </div>
+            </article>
+            <article class="oracle-card risk-card">
+                <span class="eyebrow">Conservation prédictive</span>
+                <h3>Indice de fragilité</h3>
+                <div class="risk-meter" data-risk="68"><span></span></div>
+                <p>Simulation pédagogique : climat, fréquentation et érosion sont synthétisés en un indicateur clair pour comprendre les enjeux UNESCO.</p>
+            </article>
+            <article class="oracle-card">
+                <span class="eyebrow">Accessibilité</span>
+                <h3>Mode international</h3>
+                <p>Le bouton FR/EN traduit désormais les éléments clés de l'interface et mémorise la préférence localement.</p>
+            </article>
+        </section>
+
+        <section class="curator-room reveal" aria-labelledby="curator-title">
+            <div>
+                <span class="eyebrow">Salle du conservateur</span>
+                <h2 id="curator-title">Avant / Après restauration</h2>
+                <p>Un comparateur visuel explique la différence entre une section sauvage et une section restaurée, sans remplacer l'histoire par du spectaculaire gratuit.</p>
+            </div>
+            <div class="compare-slider" aria-label="Comparateur avant après restauration">
+                <div class="compare-base"><span>Section restaurée</span></div>
+                <div class="compare-overlay"><span>Section sauvage</span></div>
+                <input type="range" min="12" max="88" value="52" class="compare-range" aria-label="Déplacer le comparateur">
+            </div>
+        </section>
+
+        <section class="passport-panel reveal" aria-labelledby="passport-title">
+            <div class="passport-card">
+                <div class="passport-stamp">MCN<br>UNESCO</div>
+                <div>
+                    <span class="eyebrow">Carnet numérique</span>
+                    <h2 id="passport-title">Passeport patrimoine</h2>
+                    <p><span class="lang-fr">Une fonctionnalité mémorable pour le jury : le visiteur collecte des sceaux virtuels en explorant l'histoire, l'architecture, la préservation et la visite.</span><span class="lang-en">A memorable jury-facing feature: visitors collect virtual seals while exploring history, architecture, preservation and travel.</span></p>
+                </div>
+            </div>
+            <div class="stamp-row">
+                <button type="button" class="mcn-stamp-v9" data-stamp="badaling" aria-label="Badaling"><span class="seal-char" aria-hidden="true">八</span><span>Badaling</span></button>
+                <button type="button" class="mcn-stamp-v9" data-stamp="mutianyu" aria-label="Mutianyu"><span class="seal-char" aria-hidden="true">慕</span><span>Mutianyu</span></button>
+                <button type="button" class="mcn-stamp-v9" data-stamp="jinshanling" aria-label="Jinshanling"><span class="seal-char" aria-hidden="true">金</span><span>Jinshanling</span></button>
+                <button type="button" class="mcn-stamp-v9" data-stamp="simatai" aria-label="Simatai"><span class="seal-char" aria-hidden="true">司</span><span>Simatai</span></button>
+                <button type="button" class="mcn-stamp-v9" data-stamp="jiankou" aria-label="Jiankou"><span class="seal-char" aria-hidden="true">箭</span><span>Jiankou</span></button>
+                <button type="button" class="mcn-stamp-v9" data-stamp="huanghuacheng" aria-label="Huanghuacheng"><span class="seal-char" aria-hidden="true">黄</span><span>Huanghuacheng</span></button>
+            </div>
+        </section>
+
+        <section class="faq-section reveal">
+            <div class="section-title">
+              <span class="lang-fr">Questions Fréquentes</span>
+              <span class="lang-en">Frequently Asked Questions</span>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span class="lang-fr">La Muraille est-elle réellement visible depuis la Lune&nbsp;?</span>
+                        <span class="lang-en">Is the Wall really visible from the Moon?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p class="lang-fr">Contrairement à une idée reçue très tenace, <strong>non</strong>. Depuis la Lune, la Muraille est totalement invisible. Même en orbite basse, elle est très difficile à distinguer car sa couleur se fond dans le paysage naturel. C'est un mythe né bien avant la conquête spatiale.</p>
+                        <p class="lang-en">Contrary to a very persistent myth, <strong>no</strong>. From the Moon, the Wall is completely invisible. Even from low orbit, it is very difficult to distinguish because its color blends into the natural landscape. It is a myth born long before the space age.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span class="lang-fr">Est-il vrai que des restes humains sont scellés dans les murs&nbsp;?</span>
+                        <span class="lang-en">Is it true that human remains are sealed inside the walls?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p class="lang-fr">On surnomme souvent la Muraille «&nbsp;le plus long cimetière du monde&nbsp;». Environ <strong>un million de personnes</strong> seraient mortes durant sa construction. Bien que la légende dise que les corps étaient utilisés comme mortier, les archéologues n'ont jamais trouvé d'ossements <em>dans</em> les murs, mais plutôt dans des fosses communes à proximité.</p>
+                        <p class="lang-en">The Wall is often nicknamed "the longest cemetery in the world." About <strong>one million people</strong> are said to have died during its construction. Although legend claims bodies were used as mortar, archaeologists have never found bones <em>inside</em> the walls, but rather in nearby mass graves.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span class="lang-fr">Quel est l'ingrédient «&nbsp;secret&nbsp;» qui fait tenir les briques&nbsp;?</span>
+                        <span class="lang-en">What is the "secret" ingredient that holds the bricks together?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p class="lang-fr">Le secret de sa longévité réside dans la cuisine&nbsp;: le <strong>riz gluant</strong>. Sous la dynastie Ming, les ouvriers mélangeaient une soupe de riz gluant à de la chaux vive. Ce mortier organique est si résistant que les herbes ne peuvent pas y pousser et qu'il résiste mieux aux séismes que le ciment moderne.</p>
+                        <p class="lang-en">The secret of its longevity lies in the kitchen: <strong>sticky rice</strong>. Under the Ming dynasty, workers mixed sticky-rice soup with quicklime. This organic mortar is so resistant that weeds cannot grow in it and it withstands earthquakes better than modern cement.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span class="lang-fr">Quelle est la longueur totale exacte de l'édifice&nbsp;?</span>
+                        <span class="lang-en">What is the exact total length of the structure?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p class="lang-fr">Ce n'est pas une ligne droite, mais un réseau complexe. Les dernières mesures officielles de l'UNESCO et de l'État chinois annoncent une longueur totale de <strong>21&nbsp;196&nbsp;kilomètres</strong>, incluant les murs, les tranchées et les barrières naturelles (montagnes, rivières).</p>
+                        <p class="lang-en">It is not a straight line, but a complex network. The latest official measurements from UNESCO and the Chinese state report a total length of <strong>21,196&nbsp;kilometers</strong>, including walls, trenches and natural barriers (mountains, rivers).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Liens utiles</h3>
+                <ul>
+                    <li><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener">Site officiel de l'UNESCO</a></li>
+                    <li><a href="visiter.html">Planifier sa visite</a></li>
+                    <li><a href="apropos.html">L’équipe M.C.N.</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Informations</h3>
+                <ul>
+                    <li><a href="mentions-legales.html">Mentions légales</a></li>
+                    <li><a href="politique-confidentialite.html">Politique de confidentialité</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <p style="margin-bottom: 12px; font-size: 13px; color: #b0b0b0;">Une question sur le projet ou la Muraille ?</p>
+                <a href="mailto:contact@muraille-mcn.fr" class="no-arrow" style="text-decoration: none;">
+                    <button class="contact-btn">✉️ Nous contacter</button>
+                </a>
+            </div>
+        </div>
+        <div class="footer-unesco-container">
+            <a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener" class="unesco-link no-arrow">
+                <div class="unesco-logo-footer">
+                    <span class="unesco-icon">🏛️</span>
+                    <span class="unesco-text">UNESCO</span>
+                </div>
+            </a>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Projet M.C.N. × UNESCO — Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="Retour en haut">↑</a>
+
+    <div class="premium-dock" aria-label="Outils rapides">
+        <button class="dock-btn" type="button" data-command="search" aria-label="Recherche intelligente">⌘</button>
+        <div class="lang-dock-group">
+        <button class="dock-btn lang-btn" type="button" data-lang="fr" aria-label="Passer en français">FR</button>
+        <button class="dock-btn lang-btn" type="button" data-lang="en" aria-label="Switch to English">EN</button>
+      </div>
+        <button class="dock-btn" type="button" data-command="sound" aria-label="Ambiance sonore">♪</button>
+    </div>
+    <div class="command-panel" role="dialog" aria-modal="false" aria-label="Recherche rapide">
+        <div class="command-card">
+            <button class="command-close" type="button" aria-label="Fermer">×</button>
+            <span class="eyebrow">M.C.N. / Recherche curatoriale</span>
+            <h2>Explorer la Muraille en un instant</h2>
+            <input id="smart-search" type="search" placeholder="Essayez : Badaling, riz gluant, UNESCO, Ming..." autocomplete="off">
+            <div class="command-results" aria-live="polite"></div>
+        </div>
+    </div>
+    <div class="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de confidentialité">
+        <div><strong>Expérience immersive</strong><p>Nous utilisons uniquement des préférences locales pour retenir la langue, l'accessibilité et l'ambiance. Aucun traçage publicitaire.</p></div>
+        <button type="button" class="cookie-accept">Accepter l'expérience</button>
+    </div>
+    <script src="main.js"></script>
+    <script src="premium_upgrade.js"></script>
+    <script src="mcn_public_final.js"></script>
+    <script src="mcn_premium_finish.js"></script>
+    <script src="dynasty_deep.js"></script>
+    <script src="lang_fix.js"></script>
+    <script src="mcn_v4_final_patch.js"></script>
+    <script src="mcn_v5_final_patch.js"></script>
+    <script src="mcn_v10.js"></script>
+    <script src="mcn_v11_final_patch.js"></script>
+</body>
+</html>

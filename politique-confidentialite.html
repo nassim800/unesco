@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Boot immédiat : lang + daltonien + musique préchargée -->
+    <script>
+      (function(){
+        // 1. Langue
+        var l = localStorage.getItem('mcn-lang');
+        if(l === 'en'){ document.documentElement.lang = 'en'; document.documentElement.classList.add('is-english'); }
+        // 2. Daltonien
+        if(localStorage.getItem('mcn-colorblind') === '1') document.documentElement.classList.add('mcn-colorblind');
+        // 3. Musique — play immédiat, seek différé pour éviter le gap entre pages
+        if(localStorage.getItem('mcn-music-on') === '1') {
+          try {
+            var savedTime = parseFloat(localStorage.getItem('mcn-music-time') || '0');
+            var savedAt   = parseFloat(localStorage.getItem('mcn-music-savedAt') || String(Date.now()));
+            var audio = new Audio('nastelbom_chinese-music.mp3');
+            audio.loop    = true;
+            audio.volume  = 0.55;
+            audio.preload = 'auto';
+            function doSeek(){
+              var elapsed = (Date.now() - savedAt) / 1000;
+              var target  = savedTime + elapsed;
+              if(audio.duration && isFinite(audio.duration)) target = target % audio.duration;
+              try { audio.currentTime = target; } catch(e){}
+            }
+            // Jouer IMMÉDIATEMENT (sans attendre canplay) pour éviter le gap
+            var playPromise = audio.play();
+            if(playPromise !== undefined){
+              playPromise.then(function(){
+                // Seek après que le play a démarré
+                if(audio.readyState >= 2){ doSeek(); }
+                else { audio.addEventListener('canplay', doSeek, { once:true }); }
+              }).catch(function(){
+                // Autoplay bloqué — réessayer au premier geste utilisateur
+                var resume = function(){
+                  audio.play().then(doSeek).catch(function(){});
+                  document.removeEventListener('click',   resume);
+                  document.removeEventListener('keydown', resume);
+                };
+                document.addEventListener('click',   resume, { once:true });
+                document.addEventListener('keydown', resume, { once:true });
+              });
+            } else {
+              // Fallback navigateurs anciens
+              if(audio.readyState >= 2){ doSeek(); }
+              else { audio.addEventListener('canplay', doSeek, { once:true }); }
+            }
+            window.__mcnBootAudio = audio;
+          } catch(e) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" as="audio" href="nastelbom_chinese-music.mp3" type="audio/mpeg">
+    <title>Politique de Confidentialité / Privacy Policy — M.C.N.</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium_upgrade.css">
+    <link rel="stylesheet" href="mcn_public_refinement.css">
+    <link rel="stylesheet" href="mcn_premium_finish.css">
+    <link rel="stylesheet" href="dynasty_modal_enhance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-premium="mcn">
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <div class="progress-bar" aria-hidden="true"></div>
+    <input type="checkbox" id="daltonien-mode" class="mode-checkbox">
+    <input type="checkbox" id="hamburger-toggle" class="hamburger-toggle">
+    <label for="hamburger-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo"><a href="index.html" class="logo-link" aria-label="Retour à l'accueil"><img src="logo-mcn.png" alt="Logo M.C.N." class="logo-img"></a></div>
+            <div class="color-mode-toggle"><label for="daltonien-mode" class="mode-button mode-normal">Normal</label><label for="daltonien-mode" class="mode-button mode-daltonien">Daltonien</label></div>
+            <label for="hamburger-toggle" class="hamburger-label" aria-label="Ouvrir le menu"><span></span><span></span><span></span></label>
+            <nav aria-label="Navigation principale">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="histoire.html">Histoire</a></li>
+                    <li><a href="architecture.html">Architecture & Sites</a></li>
+                    <li><a href="preservation.html">Préservation & UNESCO</a></li>
+                    <li><a href="visiter.html">Visiter</a></li>
+                    <li><a href="apropos.html">À propos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+        <main id="contenu" class="main-content">
+        <section class="intro-section reveal legal-section" aria-labelledby="privacy-title">
+            <h1 id="privacy-title"><span class="lang-fr">Politique de Confidentialité</span><span class="lang-en">Privacy Policy</span></h1>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">1. Collecte des données</span><span class="lang-en">1. Data collection</span></strong>
+                <p><span class="lang-fr">Ce site est un prototype académique. Il ne collecte aucune donnée personnelle à des fins commerciales ou analytiques. Aucun compte utilisateur n'est créé et aucun serveur du projet ne reçoit d'informations personnelles pendant la navigation.</span><span class="lang-en">This website is an academic prototype. It does not collect personal data for commercial or analytics purposes. No user account is created and no project server receives personal information while you browse.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">2. Stockage local du navigateur</span><span class="lang-en">2. Browser local storage</span></strong>
+                <p><span class="lang-fr">Le site utilise le stockage local du navigateur (<em>localStorage</em>) pour mémoriser uniquement des préférences de confort et de démonstration :</span><span class="lang-en">The website uses browser local storage (<em>localStorage</em>) only to remember comfort and demonstration preferences:</span></p>
+                <ul class="legal-list">
+                    <li><span class="lang-fr">langue choisie : français ou anglais ;</span><span class="lang-en">selected language: French or English;</span></li>
+                    <li><span class="lang-fr">mode standard ou mode daltonien ;</span><span class="lang-en">standard mode or colour-blind mode;</span></li>
+                    <li><span class="lang-fr">ambiance sonore activée ou non, avec position de lecture ;</span><span class="lang-en">sound ambience on or off, with playback position;</span></li>
+                    <li><span class="lang-fr">acceptation du bandeau d'information ;</span><span class="lang-en">acceptance of the information banner;</span></li>
+                    <li><span class="lang-fr">sceaux obtenus dans le passeport patrimoine ;</span><span class="lang-en">seals earned in the heritage passport;</span></li>
+                    <li><span class="lang-fr">dernier carnet de route généré.</span><span class="lang-en">last generated route notebook.</span></li>
+                </ul>
+                <p><span class="lang-fr">Ces données restent sur votre appareil. Elles ne sont pas vendues, ne sont pas utilisées pour du profilage publicitaire et ne sont pas transmises aux serveurs du projet.</span><span class="lang-en">This data stays on your device. It is not sold, not used for advertising profiling and not transmitted to the project's servers.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">3. Cookies publicitaires</span><span class="lang-en">3. Advertising cookies</span></strong>
+                <p><span class="lang-fr">Le prototype ne dépose aucun cookie publicitaire, aucun pixel de suivi, aucun système de fingerprinting et n'utilise pas Google Analytics.</span><span class="lang-en">The prototype sets no advertising cookies, no tracking pixels, no fingerprinting system and does not use Google Analytics.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">4. Services externes</span><span class="lang-en">4. External services</span></strong>
+                <p><span class="lang-fr">Certaines fonctionnalités ouvrent ou intègrent des services tiers, notamment Google Maps, PayPal, Formspree, LinkedIn, GitHub et l'UNESCO. Lorsque vous utilisez ces services ou quittez le site, leurs propres politiques de confidentialité s'appliquent.</span><span class="lang-en">Some features open or embed third-party services, including Google Maps, PayPal, Formspree, LinkedIn, GitHub and UNESCO. When you use these services or leave this website, their own privacy policies apply.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">5. Formulaire de contact</span><span class="lang-en">5. Contact form</span></strong>
+                <p><span class="lang-fr">Le formulaire de la page À propos peut utiliser Formspree pour transmettre les messages à l'équipe du projet. Les informations saisies dans ce formulaire sont alors traitées par Formspree selon sa propre <a href="https://formspree.io/legal/privacy-policy" target="_blank" rel="noopener">politique de confidentialité</a>.</span><span class="lang-en">The form on the About page may use Formspree to forward messages to the project team. Information entered in this form is then processed by Formspree according to its own <a href="https://formspree.io/legal/privacy-policy" target="_blank" rel="noopener">privacy policy</a>.</span></p>
+            </div>
+
+            <div class="legal-block">
+                <strong><span class="lang-fr">6. Vos droits</span><span class="lang-en">6. Your rights</span></strong>
+                <p><span class="lang-fr">Aucune donnée personnelle identifiable n'étant conservée par nos serveurs, il n'y a rien à supprimer dans une base de données du projet. Pour effacer vos préférences locales, videz le stockage local de votre navigateur pour ce site. Pour toute question, contactez l'équipe via la page <a href="apropos.html">À propos</a>.</span><span class="lang-en">Since no identifiable personal data is stored by our servers, there is nothing to delete from a project database. To erase your local preferences, clear this site's local storage in your browser. For any question, contact the team through the <a href="apropos.html">About</a> page.</span></p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column"><h3>Liens utiles</h3><ul><li><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener">Site officiel de l'UNESCO</a></li><li><a href="visiter.html">Planifier sa visite</a></li>
+                    <li><a href="apropos.html">L’équipe M.C.N.</a></li></ul></div>
+            <div class="footer-column"><h3>Informations</h3><ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="politique-confidentialite.html">Politique de confidentialité</a></li></ul></div>
+            <div class="footer-column"><h3>Contact</h3><p style="margin-bottom:12px;font-size:13px;color:#b0b0b0;">Une question sur le projet ou la Muraille ?</p><a href="mailto:contact@muraille-mcn.fr" class="no-arrow" style="text-decoration:none;"><button class="contact-btn">✉️ Nous contacter</button></a></div>
+        </div>
+        <div class="footer-unesco-container"><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener" class="unesco-link no-arrow"><div class="unesco-logo-footer"><span class="unesco-icon">🏛️</span><span class="unesco-text">UNESCO</span></div></a></div>
+        <div class="footer-bottom"><p>© 2026 Projet M.C.N. × UNESCO — Tous droits réservés</p></div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="Retour en haut">↑</a>
+
+    <div class="premium-dock" aria-label="Outils rapides">
+        <button class="dock-btn" type="button" data-command="search" aria-label="Recherche intelligente">⌘</button>
+        <div class="lang-dock-group">
+        <button class="dock-btn lang-btn" type="button" data-lang="fr" aria-label="Passer en français">FR</button>
+        <button class="dock-btn lang-btn" type="button" data-lang="en" aria-label="Switch to English">EN</button>
+      </div>
+        <button class="dock-btn" type="button" data-command="sound" aria-label="Ambiance sonore">♪</button>
+    </div>
+    <div class="command-panel" role="dialog" aria-modal="false" aria-label="Recherche rapide">
+        <div class="command-card">
+            <button class="command-close" type="button" aria-label="Fermer">×</button>
+            <span class="eyebrow">M.C.N. / Recherche curatoriale</span>
+            <h2>Explorer la Muraille en un instant</h2>
+            <input id="smart-search" type="search" placeholder="Essayez : Badaling, riz gluant, UNESCO, Ming..." autocomplete="off">
+            <div class="command-results" aria-live="polite"></div>
+        </div>
+    </div>
+    <div class="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de confidentialité">
+        <div><strong>Expérience immersive</strong><p>Nous utilisons uniquement des préférences locales pour retenir la langue, l'accessibilité et l'ambiance. Aucun traçage publicitaire.</p></div>
+        <button type="button" class="cookie-accept">Accepter l'expérience</button>
+    </div>
+    <script src="main.js"></script>
+    <script src="premium_upgrade.js"></script>
+    <script src="mcn_public_final.js"></script>
+    <script src="mcn_premium_finish.js"></script>
+    <script src="dynasty_deep.js"></script>
+    <script src="lang_fix.js"></script>
+    <script src="mcn_v4_final_patch.js"></script>
+    <script src="mcn_v5_final_patch.js"></script>
+    <script src="mcn_v10.js"></script>
+    <script src="mcn_v11_final_patch.js"></script>
+</body>
+</html>

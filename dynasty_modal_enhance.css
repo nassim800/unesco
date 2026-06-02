@@ -1,0 +1,405 @@
+/* ═══════════════════════════════════════════════════════════
+   DYNASTY_MODAL_ENHANCE.CSS — Améliorations des modales dynasties
+   Scrollbar, illustrations chinoises SVG inline, sections enrichies
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Modale dynasties : scrollbar élégante ── */
+.mcn-modal-body {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary, #d4890a) rgba(255,255,255,0.05);
+}
+.mcn-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.mcn-modal-body::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.03);
+  border-radius: 999px;
+}
+.mcn-modal-body::-webkit-scrollbar-thumb {
+  background: var(--primary, #d4890a);
+  border-radius: 999px;
+  opacity: 0.7;
+}
+
+/* ── Ornement chinois en tête de modale ── */
+.mcn-dynasty-ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  opacity: 0.55;
+}
+.mcn-dynasty-ornament::before,
+.mcn-dynasty-ornament::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary, #d4890a), transparent);
+}
+.mcn-dynasty-ornament span {
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--primary, #d4890a);
+  text-transform: uppercase;
+}
+
+/* ── Bloc "fait-clé" enrichi ── */
+.mcn-dynasty-fact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+.mcn-dynasty-fact-item {
+  background: rgba(212,137,10,0.06);
+  border: 1px solid rgba(212,137,10,0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: center;
+}
+.mcn-dynasty-fact-item strong {
+  display: block;
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-size: 1.1rem;
+  color: var(--primary, #d4890a);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.mcn-dynasty-fact-item span {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+}
+
+/* ── Sections thématiques dans la modale ── */
+.mcn-dynasty-section {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--primary, #d4890a);
+  border-radius: 0 10px 10px 0;
+}
+.mcn-dynasty-section h4 {
+  font-family: var(--font-ui, 'DM Sans', sans-serif) !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+  color: var(--primary, #d4890a) !important;
+  margin: 0 0 10px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mcn-dynasty-section h4::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(212,137,10,0.2);
+}
+.mcn-dynasty-section p {
+  margin: 0 0 10px !important;
+  font-size: 0.94rem !important;
+  line-height: 1.75 !important;
+  color: rgba(200,195,185,0.9) !important;
+}
+.mcn-dynasty-section p:last-child { margin-bottom: 0 !important; }
+
+/* ── Frise de règne (empereurs notables) ── */
+.mcn-dynasty-rulers {
+  margin: 16px 0;
+}
+.mcn-dynasty-rulers-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 10px;
+}
+.mcn-dynasty-ruler-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.mcn-dynasty-ruler-item:last-child { border-bottom: none; }
+.mcn-dynasty-ruler-date {
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-size: 0.7rem;
+  color: var(--primary, #d4890a);
+  min-width: 90px;
+  padding-top: 2px;
+  opacity: 0.8;
+}
+.mcn-dynasty-ruler-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: rgba(230,225,215,0.9);
+  line-height: 1.3;
+}
+.mcn-dynasty-ruler-desc {
+  font-size: 0.78rem;
+  color: rgba(180,175,165,0.7);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+/* ── Carte de guerre / conflit ── */
+.mcn-dynasty-war {
+  background: rgba(180,40,20,0.07);
+  border: 1px solid rgba(180,40,20,0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 10px 0;
+}
+.mcn-dynasty-war-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(220,100,80,0.8);
+  margin-bottom: 5px;
+}
+.mcn-dynasty-war p { color: rgba(200,190,180,0.85) !important; font-size: 0.88rem !important; margin: 0 !important; }
+
+/* ── Badge contribution Muraille ── */
+.mcn-wall-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(212,137,10,0.1);
+  border: 1px solid rgba(212,137,10,0.3);
+  border-radius: 999px;
+  padding: 5px 14px 5px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--primary, #d4890a);
+  margin: 14px 0 6px;
+}
+.mcn-wall-badge::before { content: '🏯'; font-size: 0.9rem; }
+
+/* ── Illustration SVG ornementale ── */
+.mcn-dynasty-illus {
+  width: 100%;
+  height: 60px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.18;
+}
+.mcn-dynasty-illus svg {
+  width: auto;
+  height: 100%;
+}
+
+/* ── Pagination dynasties améliorée ── */
+.mcn-dynasty-nav {
+  background: linear-gradient(0deg, rgba(13,12,10,1) 0%, rgba(13,12,10,0.8) 100%) !important;
+  padding: 14px 0 8px !important;
+  margin-top: 20px !important;
+}
+.mcn-dynasty-nav button {
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease !important;
+}
+.mcn-dynasty-nav button:hover {
+  transform: scale(1.03) !important;
+}
+
+/* ── Frise chronologique : animation au survol ── */
+.frise-dyn[data-mcn-deep] {
+  cursor: pointer;
+}
+.frise-dyn[data-mcn-deep]:focus-visible .frise-inner {
+  outline: 2px solid var(--primary, #d4890a);
+  outline-offset: 4px;
+}
+
+/* ── Timeline item : scroll highlight ── */
+.timeline-item.mcn-scroll-highlight {
+  animation: mcn-highlight-pulse 1.4s ease forwards;
+}
+@keyframes mcn-highlight-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(212,137,10,0.4); }
+  40%  { box-shadow: 0 0 0 8px rgba(212,137,10,0.15); }
+  100% { box-shadow: none; }
+}
+
+/* ── Modal media : gradient overlay amélioré ── */
+.mcn-modal.mcn-dynasty-modal .mcn-modal-media::after {
+  background: linear-gradient(
+    to right,
+    rgba(13,12,10,0.1) 0%,
+    rgba(13,12,10,0.05) 50%,
+    rgba(13,12,10,0.7) 100%
+  ) !important;
+}
+
+/* ── Sceau (caractère chinois) agrandi ── */
+.mcn-modal-seal {
+  font-size: 2.2rem !important;
+  text-shadow: 0 0 20px rgba(212,137,10,0.5) !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .mcn-dynasty-fact-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mcn-dynasty-ruler-date {
+    min-width: 70px;
+    font-size: 0.65rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   CORRECTIFS DALTONIEN & TRADUCTION
+   ═══════════════════════════════════════════════ */
+
+/* Fix daltonien : dash-card strong (chiffres du dashboard) 
+   Sous le mode daltonien, les chiffres restaient orange car
+   --gold n'est pas dans le scope du :checked ~ * */
+#daltonien-mode:checked ~ * .dash-card strong {
+  color: #34b8ff !important;
+}
+#daltonien-mode:checked ~ * .dash-card.active {
+  background: linear-gradient(135deg, rgba(0,119,212,0.28), rgba(0,93,168,0.15)) !important;
+  border-color: rgba(0,119,212,0.45) !important;
+}
+#daltonien-mode:checked ~ * .impact-strip strong {
+  color: #34b8ff !important;
+}
+#daltonien-mode:checked ~ * .eyebrow {
+  color: #34b8ff !important;
+}
+#daltonien-mode:checked ~ * .planner-output strong {
+  color: #34b8ff !important;
+}
+#daltonien-mode:checked ~ * .risk-meter span::before {
+  color: #34b8ff !important;
+}
+#daltonien-mode:checked ~ * .risk-meter span {
+  background: conic-gradient(#1593e6 0 245deg, rgba(255,255,255,0.09) 245deg 360deg) !important;
+}
+#daltonien-mode:checked ~ * .planner-chip.is-active,
+#daltonien-mode:checked ~ * .lens-chip.is-active {
+  background: #1593e6 !important;
+}
+#daltonien-mode:checked ~ * .stamp.is-earned {
+  background: #1593e6 !important;
+}
+#daltonien-mode:checked ~ * .premium-cta {
+  background: linear-gradient(135deg, #34b8ff, #0077d4) !important;
+  color: #fff !important;
+}
+#daltonien-mode:checked ~ * .cookie-accept {
+  background: linear-gradient(135deg, #34b8ff, #0077d4) !important;
+}
+
+/* html.mcn-colorblind fallback (même correctifs via class) */
+html.mcn-colorblind .dash-card strong { color: #34b8ff !important; }
+html.mcn-colorblind .dash-card.active { background: linear-gradient(135deg, rgba(0,119,212,0.28), rgba(0,93,168,0.15)) !important; border-color: rgba(0,119,212,0.45) !important; }
+html.mcn-colorblind .impact-strip strong { color: #34b8ff !important; }
+html.mcn-colorblind .eyebrow { color: #34b8ff !important; }
+html.mcn-colorblind .planner-output strong { color: #34b8ff !important; }
+html.mcn-colorblind .risk-meter span { background: conic-gradient(#1593e6 0 245deg, rgba(255,255,255,0.09) 245deg 360deg) !important; }
+html.mcn-colorblind .risk-meter span::before { color: #34b8ff !important; }
+html.mcn-colorblind .planner-chip.is-active, html.mcn-colorblind .lens-chip.is-active { background: #1593e6 !important; }
+html.mcn-colorblind .stamp.is-earned { background: #1593e6 !important; }
+html.mcn-colorblind .premium-cta { background: linear-gradient(135deg, #34b8ff, #0077d4) !important; color: #fff !important; }
+html.mcn-colorblind .cookie-accept { background: linear-gradient(135deg, #34b8ff, #0077d4) !important; }
+
+/* ── Scrollbar modale dynasties (max-height généreux) ── */
+.mcn-modal.mcn-dynasty-modal {
+  max-height: min(94vh, 1020px) !important;
+}
+.mcn-modal-body {
+  max-height: calc(94vh - 60px);
+  overflow-y: auto !important;
+}
+.mcn-modal.has-media .mcn-modal-body {
+  max-height: calc(94vh - 40px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   LANGUE CSS-FIRST — lang-fr / lang-en
+   La classe is-english sur <html> contrôle tout.
+   Aucun JS ne touche à display: les transitions sont
+   gérées uniquement par CSS pour éviter tout flash.
+   ═══════════════════════════════════════════════════════ */
+
+/* Par défaut (français) : cacher le contenu anglais */
+.lang-en { display: none !important; }
+.lang-fr { display: inline; }
+
+/* Quand is-english : inverser */
+html.is-english .lang-en { display: inline !important; }
+html.is-english .lang-fr { display: none !important; }
+
+/* Pour les blocs (p, div, section) */
+p.lang-en, div.lang-en, li.lang-en, span.lang-en { display: none !important; }
+p.lang-fr, div.lang-fr, li.lang-fr, span.lang-fr  { display: block; }
+
+html.is-english p.lang-en,
+html.is-english div.lang-en,
+html.is-english li.lang-en  { display: block !important; }
+html.is-english p.lang-fr,
+html.is-english div.lang-fr,
+html.is-english li.lang-fr  { display: none !important; }
+
+/* ── Boutons FR | EN dans le dock ── */
+.lang-dock-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lang-btn {
+  width: 52px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(212,137,10,0.3) !important;
+  background: rgba(13,13,13,0.75) !important;
+  color: rgba(212,137,10,0.6) !important;
+  font-family: var(--font-ui, 'DM Sans', sans-serif) !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.lang-btn.is-active {
+  background: var(--primary, #d4890a) !important;
+  color: #111 !important;
+  border-color: var(--primary, #d4890a) !important;
+}
+
+.lang-btn:hover:not(.is-active) {
+  background: rgba(212,137,10,0.15) !important;
+  color: var(--primary, #d4890a) !important;
+  border-color: rgba(212,137,10,0.5) !important;
+}
+
+/* Daltonien */
+html.mcn-colorblind .lang-btn.is-active,
+#daltonien-mode:checked ~ * .lang-btn.is-active {
+  background: #1593e6 !important;
+  border-color: #1593e6 !important;
+  color: #fff !important;
+}
+
+/* ── Titres FAQ dans la section-title ── */
+.section-title .lang-fr,
+.section-title .lang-en {
+  display: inline;
+}
+html.is-english .section-title .lang-fr { display: none; }
+html.is-english .section-title .lang-en { display: inline; }

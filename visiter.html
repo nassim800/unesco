@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Boot immédiat : lang + daltonien + musique préchargée -->
+    <script>
+      (function(){
+        // 1. Langue
+        var l = localStorage.getItem('mcn-lang');
+        if(l === 'en'){ document.documentElement.lang = 'en'; document.documentElement.classList.add('is-english'); }
+        // 2. Daltonien
+        if(localStorage.getItem('mcn-colorblind') === '1') document.documentElement.classList.add('mcn-colorblind');
+        // 3. Musique — play immédiat, seek différé pour éviter le gap entre pages
+        if(localStorage.getItem('mcn-music-on') === '1') {
+          try {
+            var savedTime = parseFloat(localStorage.getItem('mcn-music-time') || '0');
+            var savedAt   = parseFloat(localStorage.getItem('mcn-music-savedAt') || String(Date.now()));
+            var audio = new Audio('nastelbom_chinese-music.mp3');
+            audio.loop    = true;
+            audio.volume  = 0.55;
+            audio.preload = 'auto';
+            function doSeek(){
+              var elapsed = (Date.now() - savedAt) / 1000;
+              var target  = savedTime + elapsed;
+              if(audio.duration && isFinite(audio.duration)) target = target % audio.duration;
+              try { audio.currentTime = target; } catch(e){}
+            }
+            // Jouer IMMÉDIATEMENT (sans attendre canplay) pour éviter le gap
+            var playPromise = audio.play();
+            if(playPromise !== undefined){
+              playPromise.then(function(){
+                // Seek après que le play a démarré
+                if(audio.readyState >= 2){ doSeek(); }
+                else { audio.addEventListener('canplay', doSeek, { once:true }); }
+              }).catch(function(){
+                // Autoplay bloqué — réessayer au premier geste utilisateur
+                var resume = function(){
+                  audio.play().then(doSeek).catch(function(){});
+                  document.removeEventListener('click',   resume);
+                  document.removeEventListener('keydown', resume);
+                };
+                document.addEventListener('click',   resume, { once:true });
+                document.addEventListener('keydown', resume, { once:true });
+              });
+            } else {
+              // Fallback navigateurs anciens
+              if(audio.readyState >= 2){ doSeek(); }
+              else { audio.addEventListener('canplay', doSeek, { once:true }); }
+            }
+            window.__mcnBootAudio = audio;
+          } catch(e) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" as="audio" href="nastelbom_chinese-music.mp3" type="audio/mpeg">
+    <meta name="description" content="Guide pratique pour visiter la Grande Muraille de Chine : sections, tarifs, accès et conseils.">
+    <title>Visiter — La Grande Muraille de Chine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium_upgrade.css">
+    <link rel="stylesheet" href="mcn_public_refinement.css">
+    <link rel="stylesheet" href="mcn_premium_finish.css">
+    <link rel="stylesheet" href="dynasty_modal_enhance.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQf56TgtwCpWLfEJQ9d3khjftVmlcM=" crossorigin="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-premium="mcn">
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <div class="progress-bar" aria-hidden="true"></div>
+    <input type="checkbox" id="daltonien-mode" class="mode-checkbox">
+    <input type="checkbox" id="hamburger-toggle" class="hamburger-toggle">
+    <label for="hamburger-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo"><a href="index.html" class="logo-link" aria-label="Retour à l'accueil"><img src="logo-mcn.png" alt="Logo M.C.N." class="logo-img"></a></div>
+            <div class="color-mode-toggle"><label for="daltonien-mode" class="mode-button mode-normal">Normal</label><label for="daltonien-mode" class="mode-button mode-daltonien">Daltonien</label></div>
+            <label for="hamburger-toggle" class="hamburger-label" aria-label="Ouvrir le menu"><span></span><span></span><span></span></label>
+            <nav aria-label="Navigation principale">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="histoire.html">Histoire</a></li>
+                    <li><a href="architecture.html">Architecture & Sites</a></li>
+                    <li><a href="preservation.html">Préservation & UNESCO</a></li>
+                    <li><a href="visiter.html" class="active" aria-current="page">Visiter</a></li>
+                    <li><a href="apropos.html">À propos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="contenu" class="main-content">
+        <section class="intro-section reveal">
+            <h2>Visiter la Grande Muraille</h2>
+            <p>La Grande Muraille s'étend sur plus de 21 000 km. Chaque section offre une expérience différente : sections restaurées et accessibles ou portions sauvages pour les aventuriers. Voici les sites incontournables et les informations pratiques pour préparer votre voyage.</p>
+        </section>
+
+        <div class="section-title reveal">Sites incontournables</div>
+        <div class="four-columns">
+            <a href="#modal-badaling" class="column-card reveal reveal-delay-1">
+                <img src="badaling.png" alt="Badaling" class="column-image-real">
+                <div class="column-header">⭐ Badaling</div>
+                <div class="column-content"><p>La section la plus accessible et la mieux restaurée. Idéale pour une première visite. Téléphérique disponible. À 70 km de Pékin.</p></div>
+            </a>
+            <a href="#modal-mutianyu" class="column-card reveal reveal-delay-2">
+                <img src="mutianyu.png" alt="Mutianyu" class="column-image-real">
+                <div class="column-header">🥾 Mutianyu</div>
+                <div class="column-content"><p>Moins fréquentée, avec des forêts magnifiques. Téléphérique et luge de descente disponibles. Ambiance plus tranquille que Badaling.</p></div>
+            </a>
+            <a href="#modal-simatai" class="column-card reveal reveal-delay-3">
+                <img src="simatai.jpg" alt="Simatai" class="column-image-real">
+                <div class="column-header">🌅 Simatai</div>
+                <div class="column-content"><p>Réputée pour ses couchers de soleil et ses paysages époustouflants. Visite de nuit possible. Classée « authenticité remarquable » par l'UNESCO.</p></div>
+            </a>
+            <a href="#modal-jiankou" class="column-card reveal reveal-delay-4">
+                <img src="jiankou.png" alt="Jiankou" class="column-image-real">
+                <div class="column-header">🗺️ Jiankou</div>
+                <div class="column-content"><p>Section sauvage non restaurée pour randonneurs expérimentés. Vue spectaculaire, atmosphère authentique. Guide local recommandé.</p></div>
+            </a>
+        </div>
+
+        <!-- Modales des sections -->
+        <div id="modal-badaling" class="modal-window">
+            <a href="#_" class="modal-bg-close" aria-label="Fermer"></a>
+            <div class="modal-inner">
+                <a href="#_" class="modal-close-btn">×</a>
+                <img src="badaling.png" alt="Badaling" class="modal-header-img">
+                <div class="modal-body">
+                    <h2>Badaling (八达岭)</h2>
+                    <div class="modal-text-content">
+                        <h3>📜 Histoire et Légende</h3>
+                        <p>Construite en 1504 pendant la dynastie Ming, Badaling était un avant-poste militaire stratégique protégeant la passe de Juyongguan. Son nom, signifiant « les huit directions », vient du fait que son sommet offrait une vue dégagée sur tous les horizons.</p>
+                        <h3>✨ Pourquoi visiter ?</h3>
+                        <p>C'est la section la plus grandiose et la mieux restaurée. Idéale pour les personnes à mobilité réduite ou voyageant en famille, elle dispose d'infrastructures modernes. C'est aussi là que de nombreux chefs d'État ont marché.</p>
+                        <h3>ℹ️ Informations pratiques</h3>
+                        <ul>
+                            <li><strong>Distance depuis Pékin :</strong> Environ 70 km (1h30 en train ou bus).</li>
+                            <li><strong>Difficulté :</strong> Facile à modérée (pentes aménagées).</li>
+                            <li><strong>Affluence :</strong> Très élevée, préférez tôt le matin.</li>
+                        </ul>
+                    </div>
+                    <div class="modal-action"><a href="https://www.google.com/maps/search/?api=1&query=Badaling+Great+Wall" target="_blank" rel="noopener" class="modal-btn-maps">📍 Voir sur Google Maps</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-mutianyu" class="modal-window">
+            <a href="#_" class="modal-bg-close" aria-label="Fermer"></a>
+            <div class="modal-inner">
+                <a href="#_" class="modal-close-btn">×</a>
+                <img src="mutianyu.png" alt="Mutianyu" class="modal-header-img">
+                <div class="modal-body">
+                    <h2>Mutianyu (慕田峪)</h2>
+                    <div class="modal-text-content">
+                        <h3>📜 Histoire et Légende</h3>
+                        <p>Érigée au 6ème siècle sous les Qi du Nord, puis reconstruite par les Ming, Mutianyu possède une architecture unique : de nombreuses tours de guet rapprochées, et un mur crénelé des deux côtés.</p>
+                        <h3>✨ Pourquoi visiter ?</h3>
+                        <p>Le compromis parfait ! Moins bondée que Badaling mais tout aussi spectaculaire, elle est célèbre pour ses forêts luxuriantes. Son grand point fort : la luge toboggan pour redescendre !</p>
+                        <h3>ℹ️ Informations pratiques</h3>
+                        <ul>
+                            <li><strong>Distance depuis Pékin :</strong> Environ 73 km (2h de route).</li>
+                            <li><strong>Difficulté :</strong> Modérée (beaucoup d'escaliers sans téléphérique).</li>
+                            <li><strong>Affluence :</strong> Moyenne, très agréable.</li>
+                        </ul>
+                    </div>
+                    <div class="modal-action"><a href="https://www.google.com/maps/search/?api=1&query=Mutianyu+Great+Wall" target="_blank" rel="noopener" class="modal-btn-maps">📍 Voir sur Google Maps</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-simatai" class="modal-window">
+            <a href="#_" class="modal-bg-close" aria-label="Fermer"></a>
+            <div class="modal-inner">
+                <a href="#_" class="modal-close-btn">×</a>
+                <img src="simatai.jpg" alt="Simatai" class="modal-header-img">
+                <div class="modal-body">
+                    <h2>Simatai (司马台)</h2>
+                    <div class="modal-text-content">
+                        <h3>📜 Histoire et Légende</h3>
+                        <p>Construite sous les Ming, Simatai est la seule section préservant son aspect d'origine. Elle est reconnue par l'UNESCO pour son authenticité remarquable parmi toutes les sections.</p>
+                        <h3>✨ Pourquoi visiter ?</h3>
+                        <p>La seule section ouverte la nuit, offrant des panoramas féériques. Le village aquatique de Gubei voisin permet de combiner patrimoine et détente.</p>
+                        <h3>ℹ️ Informations pratiques</h3>
+                        <ul>
+                            <li><strong>Distance depuis Pékin :</strong> Environ 120 km (2h30 de route).</li>
+                            <li><strong>Difficulté :</strong> Moyenne à élevée (pentes raides).</li>
+                            <li><strong>Affluence :</strong> Moyenne.</li>
+                        </ul>
+                    </div>
+                    <div class="modal-action"><a href="https://www.google.com/maps/search/?api=1&query=Simatai+Great+Wall" target="_blank" rel="noopener" class="modal-btn-maps">📍 Voir sur Google Maps</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-jiankou" class="modal-window">
+            <a href="#_" class="modal-bg-close" aria-label="Fermer"></a>
+            <div class="modal-inner">
+                <a href="#_" class="modal-close-btn">×</a>
+                <img src="jiankou.png" alt="Jiankou" class="modal-header-img">
+                <div class="modal-body">
+                    <h2>Jiankou (箭扣)</h2>
+                    <div class="modal-text-content">
+                        <h3>📜 Histoire et Légende</h3>
+                        <p>Son nom signifie « l'encoche de la flèche », en raison de la forme de la montagne. Jiankou a été construite en dolomite blanche, lui donnant une couleur frappante face à la roche sombre.</p>
+                        <h3>✨ Pourquoi visiter ?</h3>
+                        <p>C'est la muraille dans son état brut. Jamais restaurée, envahie par la végétation. Le paradis des photographes et des randonneurs à la recherche de la « vraie » Muraille.</p>
+                        <h3>ℹ️ Informations pratiques</h3>
+                        <ul>
+                            <li><strong>Distance depuis Pékin :</strong> Environ 80 km.</li>
+                            <li><strong>Difficulté :</strong> Extrême. Ascension presque verticale par endroits.</li>
+                            <li><strong>Affluence :</strong> Très faible (guide local recommandé).</li>
+                        </ul>
+                    </div>
+                    <div class="modal-action"><a href="https://www.google.com/maps/search/?api=1&query=Jiankou+Great+Wall" target="_blank" rel="noopener" class="modal-btn-maps">📍 Voir sur Google Maps</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title reveal">Informations pratiques</div>
+        <div class="challenges-grid">
+            <div class="challenge-card reveal reveal-delay-1">
+                <img src="climat.png" alt="Climat" class="challenge-image">
+                <div class="challenge-label">Meilleure période</div>
+                <div class="challenge-description">Printemps (avril-mai) et automne (septembre-octobre) : températures douces et ciel dégagé. Évitez les jours fériés chinois, très fréquentés.</div>
+            </div>
+            <div class="challenge-card reveal reveal-delay-2">
+                <img src="bus.jpg" alt="Bus pour accéder à la muraille" class="challenge-image">
+                <div class="challenge-label">Accès depuis Pékin</div>
+                <div class="challenge-description">Bus depuis Deshengmen ou Dongzhimen pour Badaling et Mutianyu. Comptez 1h à 2h de trajet. Tours organisées chaque matin.</div>
+            </div>
+            <div class="challenge-card reveal reveal-delay-3">
+                <img src="billet.jpg" alt="Billet d'entrée" class="challenge-image">
+                <div class="challenge-label">Tarifs d'entrée</div>
+                <div class="challenge-description">Badaling : ~45 ¥ (6€). Mutianyu : ~65 ¥ (8€). Réservation en ligne recommandée pour éviter les files d'attente.</div>
+            </div>
+        </div>
+
+        <div class="section-title reveal">Carte des sites</div>
+        <div class="geographic-section google-map-section reveal">
+            <div class="geographic-header">Carte interactive des sections</div>
+            <div class="google-map-layout">
+                <div class="google-map-frame">
+                    <iframe id="sites-google-map" title="Carte Google Maps des sections de la Grande Muraille" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Badaling%20Great%20Wall&output=embed"></iframe>
+                    <div class="map-glass-label">
+                        <span>Section sélectionnée</span>
+                        <strong id="atlas-name">Badaling</strong>
+                    </div>
+                </div>
+                <aside class="google-map-panel">
+                    <span class="eyebrow">Atlas planifiable</span>
+                    <p id="atlas-copy">Section restaurée, accès le plus simple depuis Pékin. Cliquez sur un site pour l’afficher sur la carte. Le Carnet de Route Impérial se synchronise aussi, sans vous déplacer dans la page.</p>
+                    <div class="site-chip-grid" aria-label="Choisir une section à afficher sur Google Maps">
+                        <button class="site-chip is-active" data-section="badaling">Badaling</button>
+                        <button class="site-chip" data-section="mutianyu">Mutianyu</button>
+                        <button class="site-chip" data-section="jinshanling">Jinshanling</button>
+                        <button class="site-chip" data-section="simatai">Simatai</button>
+                        <button class="site-chip" data-section="jiankou">Jiankou</button>
+                        <button class="site-chip" data-section="huanghuacheng">Huanghuacheng</button>
+                    </div>
+                    <div class="map-panel-actions">
+                        <a id="atlas-maps" href="https://www.google.com/maps/search/?api=1&query=Badaling+Great+Wall" target="_blank" rel="noopener">Ouvrir dans Google Maps</a>
+                        <a href="#carnet-route-imperial" class="map-plan-link">Aller au carnet</a>
+                    </div>
+                    <p class="map-note">La carte intégrée est une vraie Google Maps : quand vous déplacez ou zoomez, le repère reste attaché au site réel sélectionné.</p>
+                </aside>
+            </div>
+        </div>
+
+
+
+        <section id="carnet-route-imperial" class="imperial-planner reveal" aria-labelledby="planner-title">
+            <div class="planner-hero">
+                <span class="eyebrow">Nouveau module signature / prototype patrimoine</span>
+                <h2 id="planner-title">Carnet de Route Impérial</h2>
+                <p>Un planificateur culturel intelligent : cliquez sur un tronçon, choisissez votre date, votre rythme et vos préférences. Le site compose un itinéraire réaliste avec accès Google Maps, conseils de visite, gastronomie locale, hôtels, score d'expérience et passeport patrimoine.</p>
+                <div class="planner-proof">
+                    <span>✓ Itinéraires réels Google Maps</span>
+                    <span>✓ Recommandations personnalisées</span>
+                    <span>✓ Tourisme responsable</span>
+                    <span>✓ Défi photo communautaire</span>
+                </div>
+            </div>
+
+            <div class="journey-shell">
+                <aside class="journey-map-card" aria-label="Carte des tronçons planifiables">
+                    <div class="mini-map-title">Choisir une section</div>
+                    <div class="journey-site-list" role="group" aria-label="Choix rapide des sections de la Grande Muraille">
+                        <button class="journey-pin active" data-section="badaling"><span>Badaling</span><small>Facile · familles</small></button>
+                        <button class="journey-pin" data-section="mutianyu"><span>Mutianyu</span><small>Premium · panoramas</small></button>
+                        <button class="journey-pin" data-section="jinshanling"><span>Jinshanling</span><small>Photo · crêtes</small></button>
+                        <button class="journey-pin" data-section="simatai"><span>Simatai</span><small>Nocturne · Gubei</small></button>
+                        <button class="journey-pin" data-section="jiankou"><span>Jiankou</span><small>Sauvage · expert</small></button>
+                        <button class="journey-pin" data-section="huanghuacheng"><span>Huanghuacheng</span><small>Lac · calme</small></button>
+                    </div>
+                    <div class="section-passport-preview">
+                        <div class="seal">長城</div>
+                        <div><strong id="selected-section-name">Badaling</strong><p id="selected-section-tagline">La porte d'entrée iconique, fluide et accessible depuis Pékin.</p></div>
+                    </div>
+                </aside>
+
+                <form class="journey-form" aria-label="Paramètres du voyage">
+                    <div class="form-head"><span class="eyebrow">Composer l'expérience</span><h3>Préférences de visite</h3></div>
+                    <label>Date de visite<input type="date" id="visit-date"></label>
+                    <label>Profil voyageur<select id="visit-profile"><option value="culture">Culture & patrimoine</option><option value="photo">Photo / coucher de soleil</option><option value="family">Famille & confort</option><option value="adventure">Aventure & randonnée</option><option value="premium">Premium / sans friction</option></select></label>
+                    <label>Moyen de transport<select id="visit-transport"><option value="train">Train / transport public</option><option value="bus">Bus touristique</option><option value="car">Voiture privée</option><option value="hike">Randonnée guidée</option></select></label>
+                    <label>Guide local<select id="visit-guide"><option value="no">Non, visite autonome</option><option value="yes">Oui, guide culturel</option><option value="expert">Guide expert patrimoine</option></select></label>
+                    <label>Repas souhaité<select id="visit-food"><option value="local">Spécialités locales</option><option value="vegetarian">Option végétarienne</option><option value="halal">Option halal-friendly</option><option value="premium">Table premium au retour</option></select></label>
+                    <label>Hébergement<select id="visit-hotel"><option value="none">Pas d'hôtel</option><option value="comfort">Hôtel confort proche</option><option value="boutique">Boutique hôtel / expérience</option><option value="beijing">Retour hôtel à Pékin</option></select></label>
+                    <button type="button" id="generate-journey" class="imperial-btn">Générer mon carnet</button>
+                </form>
+
+                <section class="journey-result" aria-live="polite">
+                    <div class="result-top">
+                        <div><span class="eyebrow">Itinéraire recommandé</span><h3 id="route-title">Badaling — Première grande traversée</h3></div>
+                        <div class="experience-score"><strong id="experience-score">92</strong><span>/100</span></div>
+                    </div>
+                    <div class="score-grid">
+                        <div><span>Authenticité</span><meter id="score-auth" min="0" max="100" value="72"></meter></div>
+                        <div><span>Accessibilité</span><meter id="score-access" min="0" max="100" value="96"></meter></div>
+                        <div><span>Photogénie</span><meter id="score-photo" min="0" max="100" value="82"></meter></div>
+                        <div><span>Affluence maîtrisée</span><meter id="score-crowd" min="0" max="100" value="48"></meter></div>
+                    </div>
+                    <ol class="route-timeline" id="route-timeline"></ol>
+                    <div class="route-cards">
+                        <article><h4>🍜 À goûter</h4><p id="food-reco">Zhajiangmian, jiaozi et thé au jasmin au retour vers Pékin.</p></article>
+                        <article><h4>🏨 Où dormir</h4><p id="hotel-reco">Retour conseillé à Pékin pour un meilleur choix d'hôtels.</p></article>
+                        <article><h4>🎒 Conseil terrain</h4><p id="pro-tip">Arrivez avant 8h30 : lumière douce, files plus courtes et photos plus propres.</p></article>
+                    </div>
+                    <div class="route-actions">
+                        <a id="maps-link" class="imperial-btn secondary" href="https://www.google.com/maps/dir/?api=1&origin=Beijing&destination=Badaling+Great+Wall&travelmode=transit" target="_blank" rel="noopener">Ouvrir l'itinéraire réel</a>
+                        <button type="button" id="save-passport" class="imperial-btn secondary">Ajouter au passeport</button>
+                        <button type="button" id="download-route-pdf-main" class="imperial-btn secondary">Télécharger le PDF</button>
+                        <button type="button" id="copy-route" class="imperial-btn secondary">Copier le programme</button>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="heritage-challenge photo-challenge reveal" aria-labelledby="challenge-title">
+            <div class="challenge-copy">
+                <span class="eyebrow">Gamification responsable</span>
+                <h2 id="challenge-title">Défi photo : Mon regard sur la Muraille</h2>
+                <p>Après avoir généré son carnet, le visiteur peut participer à un jeu concours culturel : publier une photo originale avec le hashtag <strong>#MCNGreatWallChallenge</strong>.</p>
+                <p>Le défi valorise les regards créatifs et respectueux du patrimoine : une composition originale, une lumière soignée, un récit court sur la section visitée et une attitude responsable sur le site.</p>
+                <a href="https://www.instagram.com/explore/tags/MCNGreatWallChallenge/" target="_blank" rel="noopener" class="imperial-btn instagram-link" aria-label="Voir le hashtag MCNGreatWallChallenge sur Instagram">Voir le challenge sur Instagram</a>
+            </div>
+            <figure class="challenge-visual-card">
+                <img src="mcn-greatwall-challenge.png" alt="Visuel du défi photo #MCNGreatWallChallenge sur la Grande Muraille" loading="lazy">
+                <figcaption>#MCNGreatWallChallenge · Galerie sociale officielle du prototype</figcaption>
+            </figure>
+        </section>
+
+
+        <section class="visitor-reviews-section reveal" aria-labelledby="reviews-title">
+            <div class="section-heading compact-heading">
+                <span class="eyebrow">Retours visiteurs</span>
+                <h2 id="reviews-title">Avis d'expérience — style Google</h2>
+                <p>Une section de confiance conçue pour rassurer l'utilisateur, mettre en avant les points forts des sections visitées et guider le choix d'itinéraire.</p>
+            </div>
+            <div class="review-grid">
+                <article class="review-card"><div class="review-top"><strong>★★★★★</strong><span>Badaling</span></div><p>« Panorama spectaculaire, accès très simple depuis Pékin et parcours bien balisé. Idéal pour une première découverte de la Muraille. »</p><small>Visiteur international · Google Reviews</small></article>
+                <article class="review-card"><div class="review-top"><strong>★★★★★</strong><span>Mutianyu</span></div><p>« Moins dense, très photogénique, avec une vue magnifique sur les crêtes. Le téléphérique rend la visite confortable. »</p><small>Famille en voyage · Google Reviews</small></article>
+                <article class="review-card"><div class="review-top"><strong>★★★★☆</strong><span>Jinshanling</span></div><p>« Une expérience plus authentique et sportive. Les tours de guet et la lumière du matin donnent une impression mémorable. »</p><small>Randonneur · Google Reviews</small></article>
+            </div>
+        </section>
+
+        <div class="key-numbers reveal">Chiffres du tourisme</div>
+        <div class="numbers-grid">
+            <div class="number-card reveal reveal-delay-1"><div class="number-value">10M+</div><div class="number-label">Visiteurs/an</div></div>
+            <div class="number-card reveal reveal-delay-2"><div class="number-value">70 km</div><div class="number-label">Distance de Pékin (Badaling)</div></div>
+            <div class="number-card reveal reveal-delay-3"><div class="number-value">1987</div><div class="number-label">Inscription UNESCO</div></div>
+            <div class="number-card reveal reveal-delay-4"><div class="number-value">+30</div><div class="number-label">Sections accessibles</div></div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column"><h3>Liens utiles</h3><ul><li><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener">Site officiel de l'UNESCO</a></li><li><a href="visiter.html">Planifier sa visite</a></li>
+                    <li><a href="apropos.html">L’équipe M.C.N.</a></li></ul></div>
+            <div class="footer-column"><h3>Informations</h3><ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="politique-confidentialite.html">Politique de confidentialité</a></li></ul></div>
+            <div class="footer-column"><h3>Contact</h3><p style="margin-bottom:12px;font-size:13px;color:#b0b0b0;">Une question sur le projet ou la Muraille ?</p><a href="mailto:contact@muraille-mcn.fr" class="no-arrow" style="text-decoration:none;"><button class="contact-btn">✉️ Nous contacter</button></a></div>
+        </div>
+        <div class="footer-unesco-container"><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener" class="unesco-link no-arrow"><div class="unesco-logo-footer"><span class="unesco-icon">🏛️</span><span class="unesco-text">UNESCO</span></div></a></div>
+        <div class="footer-bottom"><p>© 2026 Projet M.C.N. × UNESCO — Tous droits réservés</p></div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="Retour en haut">↑</a>
+
+    <div class="premium-dock" aria-label="Outils rapides">
+        <button class="dock-btn" type="button" data-command="search" aria-label="Recherche intelligente">⌘</button>
+        <div class="lang-dock-group">
+        <button class="dock-btn lang-btn" type="button" data-lang="fr" aria-label="Passer en français">FR</button>
+        <button class="dock-btn lang-btn" type="button" data-lang="en" aria-label="Switch to English">EN</button>
+      </div>
+        <button class="dock-btn" type="button" data-command="sound" aria-label="Ambiance sonore">♪</button>
+    </div>
+    <div class="command-panel" role="dialog" aria-modal="false" aria-label="Recherche rapide">
+        <div class="command-card">
+            <button class="command-close" type="button" aria-label="Fermer">×</button>
+            <span class="eyebrow">M.C.N. / Recherche curatoriale</span>
+            <h2>Explorer la Muraille en un instant</h2>
+            <input id="smart-search" type="search" placeholder="Essayez : Badaling, riz gluant, UNESCO, Ming..." autocomplete="off">
+            <div class="command-results" aria-live="polite"></div>
+        </div>
+    </div>
+    <div class="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de confidentialité">
+        <div><strong>Expérience immersive</strong><p>Nous utilisons uniquement des préférences locales pour retenir la langue, l'accessibilité et l'ambiance. Aucun traçage publicitaire.</p></div>
+        <button type="button" class="cookie-accept">Accepter l'expérience</button>
+    </div>
+    <script src="main.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="premium_upgrade.js"></script>
+    <script src="mcn_public_final.js"></script>
+    <script src="mcn_premium_finish.js"></script>
+    <script src="dynasty_deep.js"></script>
+    <script src="lang_fix.js"></script>
+    <script src="mcn_v4_final_patch.js"></script>
+    <script src="mcn_v5_final_patch.js"></script>
+    <script src="mcn_v10.js"></script>
+    <script src="mcn_v11_final_patch.js"></script>
+</body>
+</html>

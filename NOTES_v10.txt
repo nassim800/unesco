@@ -1,0 +1,47 @@
+M.C.N. × UNESCO — Notes de version v10
+========================================
+
+⚠️ MÉDIAS À CONSERVER
+Ce dossier contient le CODE corrigé (HTML/CSS/JS) uniquement.
+Vous devez y replacer vos propres fichiers médias, aux mêmes noms que dans votre projet :
+  - nastelbom_chinese-music.mp3   (musique de fond)
+  - vos vidéos / images / favicon
+Copiez simplement ces fichiers à côté des pages .html avant de mettre en ligne.
+
+CE QUI A ÉTÉ CORRIGÉ EN v10
+---------------------------
+1. MUSIQUE RÉELLEMENT CONTINUE
+   La navigation entre pages passe désormais par un routeur interne (PJAX) :
+   le contenu de <main> est remplacé sans recharger la page, donc l'élément
+   audio n'est jamais détruit → plus aucune coupure d'une seconde.
+   Repli automatique : si le fetch échoue, la navigation classique reprend.
+
+2. PASSEPORT — ACCUMULATION FIABLE
+   Un seul gestionnaire (mcn_v10.js) gère les sceaux. Les anciens restent
+   « acquis » (doré), seul le dernier ajouté porte le contour rouge.
+   Les gestionnaires concurrents (main.js, v4, v5) ont été neutralisés.
+
+3. RECHERCHE — SCROLLBAR
+   La liste de résultats est limitée en hauteur avec une barre de défilement
+   stylée (souris + tactile).
+
+4. RESPONSIVE
+   Grilles, boutons, dock, modales, tableaux et cartes s'adaptent aux écrans
+   téléphone et petits PC (points de rupture 900 / 640 / 420 px), sans
+   débordement horizontal.
+
+5. PDF DU CARNET BILINGUE
+   Les libellés de structure du PDF (titres, « Programme », « À goûter »,
+   « Où dormir », « Conseil », pied de page…) suivent désormais la langue
+   sélectionnée (FR/EN), comme le contenu.
+
+6. NETTOYAGE
+   - Texte russe parasite supprimé dans la fiche dynastie Han.
+   - Pages de développement et patchs morts retirés du livrable.
+   - Modale du carnet rendue bilingue.
+
+ORDRE DE CHARGEMENT (ne pas modifier)
+-------------------------------------
+main.js → premium_upgrade.js → mcn_public_final.js → mcn_premium_finish.js
+→ dynasty_deep.js → lang_fix.js → mcn_v4_final_patch.js → mcn_v5_final_patch.js
+→ mcn_v10.js  (toujours en dernier)

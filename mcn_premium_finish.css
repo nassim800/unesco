@@ -1,0 +1,685 @@
+/* =============================================================
+   M.C.N. — PREMIUM FINISH LAYER  (charge en DERNIER)
+   Objectif : homogénéité muséale, alignements stricts, storytelling
+   éditorial, allègement des « blocs/cartes », profondeur au clic.
+   N'altère AUCUNE fonctionnalité existante : couche additive.
+   Palette / typo : héritées des fichiers précédents (or impérial,
+   Cinzel + Cormorant Garamond + DM Sans).
+   ============================================================= */
+
+:root{
+  --mcn-gutter: clamp(22px, 5vw, 46px);   /* marge latérale UNIQUE pour tout le site */
+  --mcn-rhythm: clamp(58px, 9vw, 120px);  /* respiration verticale entre chapitres */
+  --mcn-ink-2:#c9c4bb;
+  --mcn-hair: rgba(212,139,24,.22);
+}
+
+/* ────────────────────────────────────────────────────────────
+   1. ALIGNEMENT GLOBAL — une seule gouttière, tout cadré pareil
+   ──────────────────────────────────────────────────────────── */
+.main-content,
+main.main-content{
+  max-width: var(--mcn-max) !important;
+  margin-inline: auto !important;
+  padding-inline: var(--mcn-gutter) !important;
+  box-sizing: border-box !important;
+}
+/* Les sections qui se ré-imposaient une largeur/marge propre suivent
+   désormais la gouttière du conteneur (fin des décalages incohérents). */
+.heritage-command,
+.imperial-planner,
+.google-map-section,
+.curator-room,
+.passport-panel,
+.oracle-grid,
+.impact-strip,
+.support-contact-grid,
+.about-hero,
+.team-section{
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+/* Filets de section parfaitement alignés sur la gouttière */
+.section-title::before,
+.section-title::after{ left:0 !important; right:0 !important; }
+
+/* ────────────────────────────────────────────────────────────
+   2. SÉPARATEURS ÉDITORIAUX (storytelling « publicité choc »)
+   Injectés par mcn_premium_finish.js entre les grandes sections.
+   ──────────────────────────────────────────────────────────── */
+.mcn-chapter{
+  max-width: 760px;
+  margin: var(--mcn-rhythm) auto calc(var(--mcn-rhythm) * .42);
+  text-align: center;
+  padding: 0 8px;
+}
+.mcn-chapter--tight{ margin-top: calc(var(--mcn-rhythm) * .72); }
+.mcn-chapter-kicker{
+  display:inline-block;
+  font-family: var(--font-ui);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 18px;
+  position: relative;
+  padding-top: 26px;
+}
+.mcn-chapter-kicker::before{
+  content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:1px; height:14px;
+  background: linear-gradient(var(--primary), transparent);
+}
+.mcn-chapter-title{
+  font-family: var(--font-editorial);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3.1vw, 2.6rem) !important;
+  line-height: 1.16 !important;
+  letter-spacing: .005em;
+  color: var(--mcn-ivory);
+  margin: 0 auto 14px;
+  max-width: 18ch;
+}
+.mcn-chapter-title em{ color: var(--primary); font-style: italic; }
+.mcn-chapter-lede{
+  font-family: var(--font-ui);
+  font-size: .98rem !important;
+  line-height: 1.75 !important;
+  color: var(--mcn-muted) !important;
+  max-width: 56ch;
+  margin: 0 auto !important;
+}
+.mcn-chapter-rule{
+  width: 46px; height: 1px; margin: 22px auto 0;
+  background: var(--mcn-hair);
+}
+
+/* Reveal doux propre aux chapitres (si le reveal global ne les couvre pas) */
+.mcn-chapter[data-mcn-reveal]{ opacity:0; transform: translateY(18px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+.mcn-chapter[data-mcn-reveal].is-in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion: reduce){
+  .mcn-chapter[data-mcn-reveal]{ opacity:1; transform:none; transition:none; }
+}
+
+/* ────────────────────────────────────────────────────────────
+   3. ALLÈGEMENT « cartes » + affordance de clic (profondeur)
+   ──────────────────────────────────────────────────────────── */
+.history-card[data-mcn-deep],
+.challenge-card[data-mcn-deep],
+.action-section[data-mcn-deep],
+.history-period-card[data-mcn-deep]{
+  cursor: pointer;
+  position: relative;
+}
+.history-card[data-mcn-deep],
+.challenge-card[data-mcn-deep],
+.action-section[data-mcn-deep],
+.history-period-card[data-mcn-deep],
+.frise-dyn[data-mcn-deep]{
+  transition: transform .4s var(--ease), border-color .4s var(--ease);
+}
+.history-card[data-mcn-deep]:hover,
+.challenge-card[data-mcn-deep]:hover,
+.action-section[data-mcn-deep]:hover,
+.history-period-card[data-mcn-deep]:hover{
+  border-color: var(--mcn-line-gold) !important;
+}
+/* mention discrète « Découvrir » qui apparaît au survol */
+.mcn-more{
+  display:inline-flex; align-items:center; gap:7px;
+  margin-top: 14px;
+  font-family: var(--font-ui);
+  font-size:.72rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color: var(--primary);
+  cursor: pointer;
+  opacity: .0; transform: translateX(-4px);
+  transition: opacity .35s var(--ease), transform .35s var(--ease);
+}
+.history-card .mcn-more{ padding: 0 22px 20px; }
+.challenge-card .mcn-more,
+.action-section .mcn-more,
+.history-period-card .mcn-more{ padding: 0 22px 18px; }
+.history-card:hover .mcn-more,
+.challenge-card:hover .mcn-more,
+.action-section:hover .mcn-more,
+.history-period-card:hover .mcn-more{ opacity:1; transform:none; }
+.mcn-more::after{ content:"→"; font-size:.9em; }
+
+.timeline-item[data-mcn-deep] .mcn-more{
+  align-self: flex-start;
+  margin-top: 18px;
+  padding: 0;
+}
+.timeline-item[data-mcn-deep]:hover .mcn-more,
+.timeline-item[data-mcn-deep]:focus-within .mcn-more,
+.timeline-item[data-mcn-deep].mcn-more-visible .mcn-more,
+.timeline-item[data-mcn-deep] .mcn-more.is-visible{
+  opacity: 1;
+  transform: none;
+}
+
+/* Frise chronologique : pastilles cliquables vivantes */
+.frise-dyn[data-mcn-deep]{ cursor:pointer; }
+.frise-dyn[data-mcn-deep] .frise-inner{ transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease); }
+.frise-dyn[data-mcn-deep]:hover .frise-inner{
+  transform: translateY(-4px);
+  border-color: var(--mcn-line-gold) !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.4);
+}
+.frise-dyn[data-mcn-deep]:focus-visible .frise-inner{ outline:2px solid var(--primary); outline-offset:3px; }
+
+/* ────────────────────────────────────────────────────────────
+   4. MODALE DE PROFONDEUR (fiches détaillées élégantes)
+   ──────────────────────────────────────────────────────────── */
+.mcn-modal-root{
+  position: fixed; inset: 0; z-index: 4000;
+  display: grid; place-items: center;
+  padding: clamp(16px, 4vw, 48px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .4s var(--ease);
+}
+.mcn-modal-root.is-open{ opacity:1; pointer-events:auto; }
+.mcn-modal-veil{
+  position:absolute; inset:0;
+  background: radial-gradient(circle at 30% 0%, rgba(10,10,9,.78), rgba(6,6,6,.93));
+  backdrop-filter: blur(7px) saturate(.9);
+  -webkit-backdrop-filter: blur(7px) saturate(.9);
+}
+.mcn-modal{
+  position: relative;
+  width: min(960px, 100%);
+  max-height: min(88vh, 920px);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: linear-gradient(180deg,#15140f,#0d0c0a);
+  border: 1px solid var(--mcn-line-gold);
+  border-radius: 22px;
+  box-shadow: 0 40px 120px rgba(0,0,0,.6);
+  transform: translateY(22px) scale(.985);
+  transition: transform .5s var(--ease);
+}
+.mcn-modal-root.is-open .mcn-modal{ transform:none; }
+.mcn-modal.has-media{ grid-template-columns: 42% 58%; }
+@media (max-width: 760px){ .mcn-modal.has-media{ grid-template-columns:1fr; } }
+
+.mcn-modal-media{
+  position: relative; min-height: 220px;
+  background-size: cover; background-position: center;
+}
+.mcn-modal.has-media .mcn-modal-media{ height:100%; }
+.mcn-modal-media::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(13,12,10,.05), rgba(13,12,10,.55));
+}
+@media (max-width:760px){ .mcn-modal-media{ height: 200px; } }
+.mcn-modal-media .mcn-modal-seal{
+  position:absolute; left:18px; bottom:16px; z-index:2;
+  font-family: var(--font-display);
+  font-size: 1.4rem; letter-spacing:.05em;
+  color: var(--mcn-ivory);
+  text-shadow: 0 2px 10px rgba(0,0,0,.6);
+}
+
+.mcn-modal-body{
+  padding: clamp(26px, 3.4vw, 44px);
+  overflow-y: auto;
+}
+.mcn-modal-body::-webkit-scrollbar{ width:8px; }
+.mcn-modal-body::-webkit-scrollbar-thumb{ background: var(--mcn-line-gold); border-radius:8px; }
+.mcn-modal-kicker{
+  font-family: var(--font-ui);
+  font-size:.68rem; font-weight:700; letter-spacing:.3em; text-transform:uppercase;
+  color: var(--primary); display:block; margin-bottom:10px;
+}
+.mcn-modal-title{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+  line-height: 1.05;
+  letter-spacing: .02em;
+  color: var(--mcn-ivory);
+  margin: 0 0 6px;
+}
+.mcn-modal-sub{
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 1.08rem;
+  color: var(--primary);
+  margin: 0 0 20px;
+}
+.mcn-modal-body p{
+  font-family: var(--font-ui);
+  font-size: .96rem;
+  line-height: 1.78;
+  color: var(--mcn-muted) !important;
+  margin: 0 0 16px;
+}
+.mcn-modal.mcn-dynasty-modal{
+  width: min(1180px, 100%);
+  max-height: min(92vh, 980px);
+}
+.mcn-modal.mcn-dynasty-modal.has-media{
+  grid-template-columns: minmax(280px, 38%) minmax(0, 62%);
+}
+.mcn-modal.mcn-dynasty-modal .mcn-modal-media{
+  min-height: 520px;
+  background-position: center;
+}
+.mcn-modal.mcn-dynasty-modal .mcn-modal-body{
+  padding-bottom: 28px;
+}
+.mcn-modal.mcn-dynasty-modal .mcn-modal-body h4{
+  margin-top: 28px;
+}
+.mcn-dynasty-nav{
+  position: sticky;
+  bottom: -1px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 18px;
+  background: linear-gradient(180deg, rgba(13,12,10,0), #0d0c0a 34%);
+}
+.mcn-dynasty-nav button{
+  border: 1px solid var(--mcn-line-gold);
+  border-radius: 999px;
+  background: rgba(255,255,255,.035);
+  color: var(--mcn-ivory);
+  padding: 11px 16px;
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.mcn-dynasty-nav button:hover{
+  background: var(--primary);
+  color: #15100a;
+}
+.mcn-dynasty-nav span{
+  color: var(--mcn-soft);
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: .74rem;
+  letter-spacing: .08em;
+}
+@media (max-width: 760px){
+  .mcn-modal.mcn-dynasty-modal.has-media{ grid-template-columns: 1fr; }
+  .mcn-modal.mcn-dynasty-modal .mcn-modal-media{ min-height: 220px; }
+  .mcn-dynasty-nav{ grid-template-columns: 1fr 1fr; }
+  .mcn-dynasty-nav span{ grid-column: 1 / -1; order: -1; }
+}
+.mcn-modal-body h4{
+  font-family: var(--font-ui);
+  font-size: .74rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+  color: var(--mcn-ink-2);
+  margin: 22px 0 8px;
+}
+.mcn-modal-facts{
+  list-style:none; padding:0; margin: 4px 0 18px;
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px;
+}
+.mcn-modal-facts li{
+  background: rgba(255,255,255,.035);
+  border: 1px solid var(--mcn-line);
+  border-radius: 12px;
+  padding: 13px 14px;
+}
+.mcn-modal-facts strong{
+  display:block; font-family: var(--font-display);
+  font-size: 1.25rem; color: var(--primary); line-height:1.1; margin-bottom:4px;
+}
+.mcn-modal-facts span{ font-size:.72rem; letter-spacing:.08em; color: var(--mcn-soft); }
+.mcn-modal-tip{
+  border-left: 2px solid var(--primary);
+  padding: 4px 0 4px 16px;
+  margin: 18px 0 4px;
+  font-family: var(--font-editorial);
+  font-size: 1.06rem; font-style: italic;
+  color: var(--mcn-ink-2) !important;
+}
+.mcn-modal-close{
+  position: absolute; top: 12px; right: 14px; z-index: 5;
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  background: rgba(8,8,7,.55);
+  border: 1px solid var(--mcn-line);
+  border-radius: 999px;
+  color: var(--mcn-ivory);
+  font-size: 1.3rem; line-height: 1; cursor: pointer;
+  transition: background .3s var(--ease), border-color .3s var(--ease), transform .3s var(--ease);
+}
+.mcn-modal-close:hover{ background: var(--primary); color:#16100a; border-color: var(--primary); transform: rotate(90deg); }
+body.mcn-modal-open{ overflow: hidden; }
+
+/* ────────────────────────────────────────────────────────────
+   5. VISITER — Carnet de Route Impérial : recentré + 2 rangées
+   (fin des 3 colonnes fines avec grands vides)
+   ──────────────────────────────────────────────────────────── */
+.planner-hero{
+  text-align: center !important;
+  border-bottom: 1px solid var(--mcn-line) !important;
+  padding-bottom: clamp(28px, 4vw, 46px) !important;
+  margin-bottom: clamp(30px, 4vw, 50px) !important;
+}
+.planner-hero h2{
+  font-size: clamp(2rem, 3.4vw, 3.25rem) !important;  /* aligné sur les titres « Introduction » */
+  letter-spacing: .035em !important;
+  margin: 8px auto 16px !important;
+  max-width: 22ch;
+}
+.planner-hero p{
+  margin: 0 auto !important;
+  max-width: 68ch !important;
+  text-align: center;
+}
+.planner-hero .planner-proof{
+  justify-content: center !important;
+  margin-top: 22px !important;
+  flex-wrap: wrap;
+}
+
+/* Grille en 2 rangées : (sélection + préférences) puis résultat pleine largeur */
+#carnet-route-imperial .journey-shell{
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) !important;
+  grid-template-areas:
+    "map form"
+    "result result" !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+#carnet-route-imperial .journey-map-card{ grid-area: map; }
+#carnet-route-imperial .journey-form{ grid-area: form; }
+#carnet-route-imperial .journey-result{ grid-area: result; }
+
+/* On supprime le min-height de 620px qui créait les grands blancs */
+#carnet-route-imperial .journey-map-card,
+#carnet-route-imperial .journey-form,
+#carnet-route-imperial .journey-result{
+  min-height: 0 !important;
+  height: auto !important;
+}
+#carnet-route-imperial .journey-result{ margin-top: 4px; }
+#carnet-route-imperial .score-grid{ grid-template-columns: repeat(4, minmax(0,1fr)) !important; }
+@media (max-width: 920px){
+  #carnet-route-imperial .journey-shell{
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "map" "form" "result" !important;
+  }
+  #carnet-route-imperial .score-grid{ grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+}
+
+/* ────────────────────────────────────────────────────────────
+   6. À PROPOS — intro éditoriale (fin du bloc orange-dans-orange)
+   ──────────────────────────────────────────────────────────── */
+.about-hero{
+  display: grid !important;
+  grid-template-columns: 1.25fr .9fr !important;
+  gap: clamp(28px, 5vw, 64px) !important;
+  align-items: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: clamp(28px,5vw,60px) 0 !important;
+  border-bottom: 1px solid var(--mcn-line) !important;
+}
+.about-hero::before,
+.about-hero::after{ display:none !important; }
+.about-hero-copy h1,
+.about-hero-copy h2{
+  font-family: var(--font-display) !important;
+  font-size: clamp(2.2rem, 4.4vw, 3.9rem) !important;
+  line-height: 1.04 !important;
+  letter-spacing: .02em !important;
+}
+.about-hero-copy p{ max-width: 54ch !important; }
+
+/* Carte « Votre retour améliore l'expérience » : sobre, plus orange massif */
+.about-impact-card{
+  background: rgba(255,255,255,.035) !important;
+  border: 1px solid var(--mcn-line-gold) !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+  padding: clamp(24px, 3vw, 34px) !important;
+}
+.about-impact-card::before,
+.about-impact-card::after{ display:none !important; }
+.about-impact-card h2,
+.about-impact-card h3{
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.5rem, 2.4vw, 2.2rem) !important;
+  line-height: 1.08 !important;
+}
+.about-impact-card .premium-cta{ margin-top: 18px !important; }
+
+/* Boutons : on calme le « tout orange » — 1 primaire plein, le reste en contour */
+.about-hero-actions{ gap: 14px !important; flex-wrap: wrap; }
+.ghost-cta{
+  background: transparent !important;
+  border: 1px solid var(--mcn-line-gold) !important;
+  color: var(--mcn-ivory) !important;
+  box-shadow: none !important;
+}
+.ghost-cta:hover{ border-color: var(--primary) !important; color: var(--primary) !important; }
+
+/* ────────────────────────────────────────────────────────────
+   7. À PROPOS — crédits développeurs (photos plus contenues = + pro)
+   ──────────────────────────────────────────────────────────── */
+.team-grid-real{
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+  gap: clamp(16px, 2vw, 26px) !important;
+}
+@media (max-width: 900px){ .team-grid-real{ grid-template-columns: repeat(2, minmax(0,1fr)) !important; } }
+@media (max-width: 540px){ .team-grid-real{ grid-template-columns: 1fr !important; } }
+
+.profile-card-real{ border-radius: 16px !important; overflow: hidden; }
+.profile-photo-wrap{
+  aspect-ratio: 4 / 3 !important;     /* avant : très haut → paraissait « gros » */
+  height: auto !important;
+  max-height: 210px !important;
+  overflow: hidden !important;
+  border-bottom: 1px solid var(--mcn-line) !important;
+}
+.profile-photo,
+.profile-photo-placeholder{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 22% !important;
+}
+.profile-body{ padding: 18px 20px 22px !important; }
+.profile-role{
+  font-size: .66rem !important;
+  letter-spacing: .16em !important;
+  line-height: 1.5 !important;
+}
+.profile-body h3{ font-size: 1.18rem !important; letter-spacing: .015em; }
+.profile-body p{ font-size: .9rem !important; line-height: 1.7 !important; }
+.profile-links.social-icons a{ width: 34px !important; height: 34px !important; }
+
+.about-hero-centered{
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  justify-items: center !important;
+  min-height: auto !important;
+  max-width: 920px !important;
+  margin: 0 auto var(--mcn-rhythm) !important;
+  padding: clamp(10px, 3vw, 24px) 0 !important;
+  text-align: center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.about-hero-centered::before,
+.about-hero-centered::after{ display: none !important; }
+.about-hero-centered h1{
+  max-width: 12ch !important;
+  margin: 10px auto 18px !important;
+  font-family: var(--font-editorial) !important;
+  font-size: clamp(2.7rem, 6vw, 5.6rem) !important;
+  font-weight: 700 !important;
+  line-height: .95 !important;
+  letter-spacing: .01em !important;
+}
+.about-hero-centered h1 em,
+.about-centered-heading h2 span,
+.about-donation-callout h2 em{
+  color: var(--primary);
+  font-style: italic;
+}
+.about-hero-centered p{
+  max-width: 68ch !important;
+  margin: 0 auto 14px !important;
+  font-family: var(--font-ui);
+  font-size: clamp(1rem, 1.45vw, 1.18rem) !important;
+  line-height: 1.85 !important;
+  color: var(--mcn-muted) !important;
+}
+.about-feedback-copy{
+  color: var(--mcn-ivory) !important;
+}
+.about-centered-actions{
+  justify-content: center !important;
+  margin-top: 24px !important;
+}
+.about-centered-heading{
+  max-width: 820px !important;
+  margin: 0 auto 34px !important;
+  text-align: center !important;
+}
+.about-centered-heading h2{
+  max-width: 12ch;
+  margin-inline: auto !important;
+  font-family: var(--font-editorial) !important;
+  font-size: clamp(2.2rem, 4.6vw, 4.4rem) !important;
+  line-height: 1.02 !important;
+}
+.about-centered-heading p{
+  max-width: 62ch;
+  margin-inline: auto;
+}
+.team-grid-compact .profile-card-real{
+  display: grid !important;
+  grid-template-rows: auto 1fr;
+  min-height: 0 !important;
+  border-radius: 18px !important;
+  padding: 26px 20px 22px !important;
+  text-align: center;
+}
+.team-grid-compact .profile-photo-wrap{
+  width: clamp(104px, 10vw, 138px) !important;
+  height: clamp(104px, 10vw, 138px) !important;
+  aspect-ratio: 1 !important;
+  max-height: none !important;
+  margin: 0 auto 18px !important;
+  border: 1px solid var(--mcn-line-gold) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 18px 52px rgba(0,0,0,.34);
+}
+.team-grid-compact .profile-photo-wrap::after{
+  height: 34%;
+  border-radius: 50%;
+}
+.team-grid-compact .profile-photo{
+  border-radius: 50%;
+}
+.team-grid-compact .profile-body{
+  padding: 0 !important;
+  align-items: center;
+}
+.team-grid-compact .profile-body p{
+  max-width: 28ch;
+  margin-inline: auto;
+}
+.team-grid-compact .profile-links{
+  justify-content: center;
+  padding-top: 12px !important;
+}
+.about-donation-callout{
+  max-width: 820px;
+  margin: var(--mcn-rhythm) auto calc(var(--mcn-rhythm) * .45);
+  text-align: center;
+}
+.about-donation-callout h2{
+  max-width: 13ch;
+  margin: 10px auto 18px;
+  font-family: var(--font-editorial);
+  font-size: clamp(2.1rem, 4.2vw, 4rem);
+  line-height: 1.05;
+  color: var(--mcn-ivory);
+}
+.about-donation-callout p{
+  max-width: 65ch;
+  margin: 0 auto;
+  color: var(--mcn-muted);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.85;
+}
+
+/* ────────────────────────────────────────────────────────────
+   8. À PROPOS — formulaires soutien / contact (sobriété muséale)
+   ──────────────────────────────────────────────────────────── */
+.support-card,
+.contact-panel{
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid var(--mcn-line) !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+}
+.support-card::before,
+.contact-panel::before,
+.support-card::after,
+.contact-panel::after{ display:none !important; }
+.about-contact-form label,
+.support-card h3,
+.contact-panel h3{ letter-spacing:.01em; }
+.about-contact-form input,
+.about-contact-form select,
+.about-contact-form textarea{
+  background: rgba(0,0,0,.32) !important;
+  border: 1px solid var(--mcn-line) !important;
+  border-radius: 12px !important;
+}
+.about-contact-form input:focus,
+.about-contact-form select:focus,
+.about-contact-form textarea:focus{
+  border-color: var(--primary) !important;
+  outline: none !important;
+}
+/* CTA PayPal : contour or au lieu d'un gros bloc plein */
+.paypal-cta{
+  background: transparent !important;
+  border: 1px solid var(--mcn-line-gold) !important;
+  color: var(--mcn-ivory) !important;
+  box-shadow: none !important;
+}
+.paypal-cta:hover{ border-color: var(--primary) !important; color: var(--primary) !important; }
+.form-submit{ box-shadow: none !important; }
+
+/* ────────────────────────────────────────────────────────────
+   9. POLISH GLOBAL — un peu plus d'air, titres alignés
+   ──────────────────────────────────────────────────────────── */
+.section-title{ margin-top: var(--mcn-rhythm) !important; margin-bottom: clamp(22px,3vw,38px) !important; }
+.key-numbers{ margin-top: calc(var(--mcn-rhythm) * .7) !important; }
+.intro-section p{ max-width: 64ch !important; margin-inline: auto !important; }
+
+/* accessibilité focus visible homogène */
+a:focus-visible, button:focus-visible, .journey-pin:focus-visible{
+  outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 8px;
+}
+
+/* l'icône son active reste lisible quand la musique tourne */
+.dock-btn.is-active{ color: var(--primary) !important; }

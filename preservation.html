@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Boot immédiat : lang + daltonien + musique préchargée -->
+    <script>
+      (function(){
+        // 1. Langue
+        var l = localStorage.getItem('mcn-lang');
+        if(l === 'en'){ document.documentElement.lang = 'en'; document.documentElement.classList.add('is-english'); }
+        // 2. Daltonien
+        if(localStorage.getItem('mcn-colorblind') === '1') document.documentElement.classList.add('mcn-colorblind');
+        // 3. Musique — play immédiat, seek différé pour éviter le gap entre pages
+        if(localStorage.getItem('mcn-music-on') === '1') {
+          try {
+            var savedTime = parseFloat(localStorage.getItem('mcn-music-time') || '0');
+            var savedAt   = parseFloat(localStorage.getItem('mcn-music-savedAt') || String(Date.now()));
+            var audio = new Audio('nastelbom_chinese-music.mp3');
+            audio.loop    = true;
+            audio.volume  = 0.55;
+            audio.preload = 'auto';
+            function doSeek(){
+              var elapsed = (Date.now() - savedAt) / 1000;
+              var target  = savedTime + elapsed;
+              if(audio.duration && isFinite(audio.duration)) target = target % audio.duration;
+              try { audio.currentTime = target; } catch(e){}
+            }
+            // Jouer IMMÉDIATEMENT (sans attendre canplay) pour éviter le gap
+            var playPromise = audio.play();
+            if(playPromise !== undefined){
+              playPromise.then(function(){
+                // Seek après que le play a démarré
+                if(audio.readyState >= 2){ doSeek(); }
+                else { audio.addEventListener('canplay', doSeek, { once:true }); }
+              }).catch(function(){
+                // Autoplay bloqué — réessayer au premier geste utilisateur
+                var resume = function(){
+                  audio.play().then(doSeek).catch(function(){});
+                  document.removeEventListener('click',   resume);
+                  document.removeEventListener('keydown', resume);
+                };
+                document.addEventListener('click',   resume, { once:true });
+                document.addEventListener('keydown', resume, { once:true });
+              });
+            } else {
+              // Fallback navigateurs anciens
+              if(audio.readyState >= 2){ doSeek(); }
+              else { audio.addEventListener('canplay', doSeek, { once:true }); }
+            }
+            window.__mcnBootAudio = audio;
+          } catch(e) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" as="audio" href="nastelbom_chinese-music.mp3" type="audio/mpeg">
+    <meta name="description" content="Préservation de la Grande Muraille de Chine : défis, projets de restauration et conservation digitale UNESCO.">
+    <title>Préservation & UNESCO — La Grande Muraille de Chine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium_upgrade.css">
+    <link rel="stylesheet" href="mcn_public_refinement.css">
+    <link rel="stylesheet" href="mcn_premium_finish.css">
+    <link rel="stylesheet" href="dynasty_modal_enhance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-premium="mcn">
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <div class="progress-bar" aria-hidden="true"></div>
+    <input type="checkbox" id="daltonien-mode" class="mode-checkbox">
+    <input type="checkbox" id="hamburger-toggle" class="hamburger-toggle">
+    <label for="hamburger-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo"><a href="index.html" class="logo-link" aria-label="Retour à l'accueil"><img src="logo-mcn.png" alt="Logo M.C.N." class="logo-img"></a></div>
+            <div class="color-mode-toggle"><label for="daltonien-mode" class="mode-button mode-normal">Normal</label><label for="daltonien-mode" class="mode-button mode-daltonien">Daltonien</label></div>
+            <label for="hamburger-toggle" class="hamburger-label" aria-label="Ouvrir le menu"><span></span><span></span><span></span></label>
+            <nav aria-label="Navigation principale">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="histoire.html">Histoire</a></li>
+                    <li><a href="architecture.html">Architecture & Sites</a></li>
+                    <li><a href="preservation.html" class="active" aria-current="page">Préservation & UNESCO</a></li>
+                    <li><a href="visiter.html">Visiter</a></li>
+                    <li><a href="apropos.html">À propos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="contenu" class="main-content">
+        <section class="preservation-intro reveal">
+            <h2>Préservation & UNESCO</h2>
+            <p>La préservation de la Grande Muraille de Chine, site du patrimoine mondial de l'UNESCO, est cruciale pour sauvegarder son intégrité historique et culturelle face aux défis modernes.</p>
+        </section>
+
+        <div class="section-title reveal">Défis de préservation</div>
+        <div class="challenges-grid">
+            <div class="challenge-card reveal reveal-delay-1">
+                <img src="erosion-naturelle.webp" alt="Érosion naturelle de la Grande Muraille" class="challenge-image">
+                <div class="challenge-label">Érosion naturelle</div>
+                <div class="challenge-description">Le vent, la pluie et les variations de température fragilisent progressivement les structures anciennes, accélérant leur dégradation.</div>
+            </div>
+            <div class="challenge-card reveal reveal-delay-2">
+                <img src="touristes-surcharge.jpg" alt="Foule de touristes visitant la Grande Muraille" class="challenge-image">
+                <div class="challenge-label">Pression touristique</div>
+                <div class="challenge-description">Le flux massif de visiteurs fragilise les pierres originales. La gestion durable des accès est cruciale pour limiter l'usure mécanique.</div>
+            </div>
+            <div class="challenge-card reveal reveal-delay-3">
+                <img src="developpement-urbain.jpg" alt="Développement urbain près de la Grande Muraille" class="challenge-image">
+                <div class="challenge-label">Développement urbain</div>
+                <div class="challenge-description">L'expansion des infrastructures modernes menace l'intégrité du site. Nous œuvrons pour sanctuariser les zones historiques environnantes.</div>
+            </div>
+        </div>
+
+        <div class="section-title reveal">Projets de restauration</div>
+        <div class="project-card reveal">
+            <div class="project-header">Projet 2020-2025</div>
+            <div class="project-content">
+                <div class="project-description">
+                    <p>Campagne majeure de consolidation des structures instables et nettoyage des graffitis historiques, respectant les méthodes de construction ancestrales.</p>
+                    <div class="project-details">
+                        <div class="project-detail">Budget<br><strong>200M ¥</strong></div>
+                        <div class="project-detail">Longueur<br><strong>45km</strong></div>
+                    </div>
+                </div>
+                <div class="project-images">
+                    <img src="graffitis-muraille.jpg" alt="Graffitis sur la Grande Muraille nécessitant nettoyage" class="project-img">
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 48px;">
+                <p style="margin-bottom: 14px; font-size: 15px; color: var(--text-secondary);">Et vous, quel graffiti auriez-vous fait ? (Virtuellement, bien sûr !)</p>
+                <a href="#modal-graffiti" class="modal-btn-maps" style="background: linear-gradient(135deg, #8e44ad 0%, #c0392b 100%);">🎨 Tagger la muraille</a>
+            </div>
+        </div>
+
+        <div class="conservation-section reveal">
+            <div class="conservation-map" style="padding: 0; overflow: hidden; border: 1px solid var(--border-subtle);">
+                <iframe title="The Great Wall of China (Section 3D)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="fullscreen; xr-spatial-tracking" src="https://sketchfab.com/models/405928f2624742d18408896d26fc0d28/embed" style="width: 100%; height: 100%; border-radius: 10px;"></iframe>
+            </div>
+            <div>
+                <div class="conservation-header">Conservation digitale</div>
+                <div class="conservation-text">
+                    <p>Utilisation de scans LiDAR et de drones pour créer un jumeau numérique précis. Cette modélisation permet d'anticiper les risques d'effondrement.</p>
+                </div>
+                <div class="conservation-tools">
+                    <a href="#modal-scan" class="tool-item"><div class="tool-icon">📐</div><span>Découvrir le Scan 3D</span></a>
+                    <a href="#modal-drones" class="tool-item"><div class="tool-icon">🚁</div><span>Vols de Drones</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title reveal">Actions & Initiatives</div>
+        <div class="actions-container">
+            <div class="action-section reveal reveal-delay-1">
+                <div class="action-header">Actions & Initiatives</div>
+                <img src="sensibiliser.jpg" alt="Actions UNESCO à la Muraille" class="action-image">
+                <div class="action-header">Éducation et sensibilisation</div>
+                <div class="action-description">Programmes éducatifs internationaux pour sensibiliser les jeunes générations à la préservation du patrimoine mondial.</div>
+            </div>
+            <div class="action-section reveal reveal-delay-2">
+                <div class="action-header contribute">Contribuer</div>
+                <img src="partenariat.jpg" alt="Partenariats internationaux" class="action-image">
+                <div class="action-header">Partenariats internationaux</div>
+                <div class="action-description">Collaborations avec des experts et organisations mondiales pour la préservation de la Grande Muraille de Chine.</div>
+            </div>
+        </div>
+
+        <section class="restoration-history-section reveal">
+            <div class="section-title">Historique des Restaurations</div>
+            <div class="four-columns">
+                <div class="history-period-card reveal reveal-delay-1">
+                    <div class="period-header">1950s</div>
+                    <img src="historic-bw.jpg" alt="Restauration 1950s" class="period-image">
+                    <div class="period-divider">1950s</div>
+                    <div class="period-description">Premiers grands travaux de restauration après la fondation de la RPC.</div>
+                </div>
+                <div class="history-period-card reveal reveal-delay-2">
+                    <div class="period-header">1980s</div>
+                    <img src="restauration-1980s.png" alt="Restauration 1980s" class="period-image">
+                    <div class="period-divider">1980s</div>
+                    <div class="period-description">Intensification des projets suite à l'inscription au patrimoine mondial de l'UNESCO.</div>
+                </div>
+                <div class="history-period-card reveal reveal-delay-3">
+                    <div class="period-header">2000s</div>
+                    <img src="restauration-2000s.png" alt="Restauration 2000s" class="period-image">
+                    <div class="period-divider">2000s</div>
+                    <div class="period-description">Utilisation de techniques modernes pour une restauration plus précise.</div>
+                </div>
+                <div class="history-period-card reveal reveal-delay-4">
+                    <div class="period-header">2020s</div>
+                    <img src="restauration-2020s.jpg" alt="Restauration 2020s" class="period-image">
+                    <div class="period-divider">2020s</div>
+                    <div class="period-description">Focus sur la conservation préventive et la gestion durable.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modales -->
+    <div id="modal-drones" class="modal-window">
+        <a href="#_" class="modal-bg-close" aria-label="Fermer"></a>
+        <div class="modal-inner" style="max-width: 960px;">
+            <a href="#_" class="modal-close-btn">×</a>
+            <div class="modal-body">
+                <h2>Survol Inédit par Drone</h2>
+                <p style="text-align: center; margin-bottom: 20px; font-size: 15px; color: var(--text-secondary);">Découvrez la majesté de la Grande Muraille, serpentant sur les crêtes montagneuses, capturée en ultra-haute définition.</p>
+                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border-subtle);">
+                    <div class="video-container">
+                        <video id="droneVideo" controls width="100%" poster="votre-image-de-couverture.jpg">
+                            <source src="drone.mp4" type="video/mp4">
+                            Votre navigateur ne supporte pas la lecture de vidéos.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-scan" class="modal-window">
+        <a href="#_" class="modal-bg-close" aria-label="Fermer"></a>
+        <div class="modal-inner">
+            <a href="#_" class="modal-close-btn">×</a>
+            <img src="conservation-digitale.jpg" alt="Scan LiDAR" class="modal-header-img" style="height: 240px;">
+            <div class="modal-body">
+                <h2>La Technologie LiDAR</h2>
+                <div class="modal-text-content">
+                    <h3>📐 Une précision millimétrique</h3>
+                    <p>Le LiDAR (Light Detection and Ranging) utilise des impulsions laser pour créer un "nuage de points" ultra-précis de la muraille. Cela permet de détecter des affaissements ou des fissures invisibles à l'œil nu.</p>
+                    <h3>🛡️ Prévenir plutôt que guérir</h3>
+                    <p>Grâce à ces jumeaux numériques, l'UNESCO et le gouvernement chinois peuvent anticiper les effondrements et cibler exactement quelles briques ont besoin d'être renforcées.</p>
+                    <h3>💻 Archives pour l'Éternité</h3>
+                    <p>Si une section devait un jour être détruite par une catastrophe naturelle, ces scans 3D permettraient de la reconstruire à l'identique, brique par brique.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-graffiti" class="modal-window">
+        <a href="#_" class="modal-bg-close" aria-label="Fermer"></a>
+        <div class="modal-inner" style="max-width: 820px;">
+            <a href="#_" class="modal-close-btn">×</a>
+            <div class="modal-body" style="padding: 24px;">
+                <h2>Mur d'expression libre</h2>
+                <p style="text-align: center; margin-bottom: 16px; font-size: 14px; color: var(--primary);">
+                    ⚠️ Attention : À ne surtout pas reproduire sur place !<br>
+                    Le patrimoine est précieux. Exprimez-vous ici, mais n'oubliez pas de nettoyer avant de partir !
+                </p>
+                <div style="position: relative; width: 100%; height: 420px; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary); background-image: url('mur_tag.jpg'); background-size: cover; background-position: center; cursor: crosshair;">
+                    <canvas id="graffiti-canvas" width="800" height="420" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none;"></canvas>
+                </div>
+                <div class="modal-action" style="margin-top: 20px;">
+                    <button id="btn-nettoyer" class="modal-btn-maps" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; cursor: pointer;">🧽 Nettoyer mon graffiti</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column"><h3>Liens utiles</h3><ul><li><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener">Site officiel de l'UNESCO</a></li><li><a href="visiter.html">Planifier sa visite</a></li>
+                    <li><a href="apropos.html">L’équipe M.C.N.</a></li></ul></div>
+            <div class="footer-column"><h3>Informations</h3><ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="politique-confidentialite.html">Politique de confidentialité</a></li></ul></div>
+            <div class="footer-column"><h3>Contact</h3><p style="margin-bottom:12px;font-size:13px;color:#b0b0b0;">Une question sur le projet ou la Muraille ?</p><a href="mailto:contact@muraille-mcn.fr" class="no-arrow" style="text-decoration:none;"><button class="contact-btn">✉️ Nous contacter</button></a></div>
+        </div>
+        <div class="footer-unesco-container"><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener" class="unesco-link no-arrow"><div class="unesco-logo-footer"><span class="unesco-icon">🏛️</span><span class="unesco-text">UNESCO</span></div></a></div>
+        <div class="footer-bottom"><p>© 2026 Projet M.C.N. × UNESCO — Tous droits réservés</p></div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="Retour en haut">↑</a>
+
+    <div class="premium-dock" aria-label="Outils rapides">
+        <button class="dock-btn" type="button" data-command="search" aria-label="Recherche intelligente">⌘</button>
+        <div class="lang-dock-group">
+        <button class="dock-btn lang-btn" type="button" data-lang="fr" aria-label="Passer en français">FR</button>
+        <button class="dock-btn lang-btn" type="button" data-lang="en" aria-label="Switch to English">EN</button>
+      </div>
+        <button class="dock-btn" type="button" data-command="sound" aria-label="Ambiance sonore">♪</button>
+    </div>
+    <div class="command-panel" role="dialog" aria-modal="false" aria-label="Recherche rapide">
+        <div class="command-card">
+            <button class="command-close" type="button" aria-label="Fermer">×</button>
+            <span class="eyebrow">M.C.N. / Recherche curatoriale</span>
+            <h2>Explorer la Muraille en un instant</h2>
+            <input id="smart-search" type="search" placeholder="Essayez : Badaling, riz gluant, UNESCO, Ming..." autocomplete="off">
+            <div class="command-results" aria-live="polite"></div>
+        </div>
+    </div>
+    <div class="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de confidentialité">
+        <div><strong>Expérience immersive</strong><p>Nous utilisons uniquement des préférences locales pour retenir la langue, l'accessibilité et l'ambiance. Aucun traçage publicitaire.</p></div>
+        <button type="button" class="cookie-accept">Accepter l'expérience</button>
+    </div>
+    <script src="main.js"></script>
+    <script src="premium_upgrade.js"></script>
+    <script src="mcn_public_final.js"></script>
+    <script src="mcn_premium_finish.js"></script>
+    <script src="dynasty_deep.js"></script>
+    <script src="lang_fix.js"></script>
+    <script src="mcn_v4_final_patch.js"></script>
+    <script src="mcn_v5_final_patch.js"></script>
+    <script src="mcn_v10.js"></script>
+    <script src="mcn_v11_final_patch.js"></script>
+</body>
+</html>

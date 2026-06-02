@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Boot immédiat : lang + daltonien + musique préchargée -->
+    <script>
+      (function(){
+        // 1. Langue
+        var l = localStorage.getItem('mcn-lang');
+        if(l === 'en'){ document.documentElement.lang = 'en'; document.documentElement.classList.add('is-english'); }
+        // 2. Daltonien
+        if(localStorage.getItem('mcn-colorblind') === '1') document.documentElement.classList.add('mcn-colorblind');
+        // 3. Musique — play immédiat, seek différé pour éviter le gap entre pages
+        if(localStorage.getItem('mcn-music-on') === '1') {
+          try {
+            var savedTime = parseFloat(localStorage.getItem('mcn-music-time') || '0');
+            var savedAt   = parseFloat(localStorage.getItem('mcn-music-savedAt') || String(Date.now()));
+            var audio = new Audio('nastelbom_chinese-music.mp3');
+            audio.loop    = true;
+            audio.volume  = 0.55;
+            audio.preload = 'auto';
+            function doSeek(){
+              var elapsed = (Date.now() - savedAt) / 1000;
+              var target  = savedTime + elapsed;
+              if(audio.duration && isFinite(audio.duration)) target = target % audio.duration;
+              try { audio.currentTime = target; } catch(e){}
+            }
+            // Jouer IMMÉDIATEMENT (sans attendre canplay) pour éviter le gap
+            var playPromise = audio.play();
+            if(playPromise !== undefined){
+              playPromise.then(function(){
+                // Seek après que le play a démarré
+                if(audio.readyState >= 2){ doSeek(); }
+                else { audio.addEventListener('canplay', doSeek, { once:true }); }
+              }).catch(function(){
+                // Autoplay bloqué — réessayer au premier geste utilisateur
+                var resume = function(){
+                  audio.play().then(doSeek).catch(function(){});
+                  document.removeEventListener('click',   resume);
+                  document.removeEventListener('keydown', resume);
+                };
+                document.addEventListener('click',   resume, { once:true });
+                document.addEventListener('keydown', resume, { once:true });
+              });
+            } else {
+              // Fallback navigateurs anciens
+              if(audio.readyState >= 2){ doSeek(); }
+              else { audio.addEventListener('canplay', doSeek, { once:true }); }
+            }
+            window.__mcnBootAudio = audio;
+          } catch(e) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" as="audio" href="nastelbom_chinese-music.mp3" type="audio/mpeg">
+    <meta name="description" content="Architecture de la Grande Muraille : tours de guet, matériaux, forteresses et exploration immersive des tronçons.">
+    <title>Architecture & Sites — La Grande Muraille de Chine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium_upgrade.css">
+    <link rel="stylesheet" href="mcn_public_refinement.css">
+    <link rel="stylesheet" href="mcn_premium_finish.css">
+    <link rel="stylesheet" href="dynasty_modal_enhance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-premium="mcn">
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <div class="progress-bar" aria-hidden="true"></div>
+    <input type="checkbox" id="daltonien-mode" class="mode-checkbox">
+    <input type="checkbox" id="hamburger-toggle" class="hamburger-toggle">
+    <label for="hamburger-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo"><a href="index.html" class="logo-link" aria-label="Retour à l'accueil"><img src="logo-mcn.png" alt="Logo M.C.N." class="logo-img"></a></div>
+            <div class="color-mode-toggle">
+                <label for="daltonien-mode" class="mode-button mode-normal">Normal</label>
+                <label for="daltonien-mode" class="mode-button mode-daltonien">Daltonien</label>
+            </div>
+            <label for="hamburger-toggle" class="hamburger-label" aria-label="Ouvrir le menu"><span></span><span></span><span></span></label>
+            <nav aria-label="Navigation principale">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="histoire.html">Histoire</a></li>
+                    <li><a href="architecture.html" class="active" aria-current="page">Architecture & Sites</a></li>
+                    <li><a href="preservation.html">Préservation & UNESCO</a></li>
+                    <li><a href="visiter.html">Visiter</a></li>
+                    <li><a href="apropos.html">À propos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="contenu" class="main-content">
+        <section class="intro-section reveal">
+            <h2>Architecture & Sites</h2>
+            <p>La Grande Muraille de Chine est bien plus qu'un simple mur. C'est un système défensif complexe composé de murs, de tours de guet, de forteresses et de postes de signal. Chaque section reflète les techniques et les ressources locales de son époque.</p>
+        </section>
+
+        <div class="key-numbers reveal">Caractéristiques techniques</div>
+        <div class="numbers-grid">
+            <div class="number-card reveal reveal-delay-1"><div class="number-value">21 196 km</div><div class="number-label">Longueur totale</div></div>
+            <div class="number-card reveal reveal-delay-2"><div class="number-value">4 à 8 m</div><div class="number-label">Largeur moyenne</div></div>
+            <div class="number-card reveal reveal-delay-3"><div class="number-value">5 à 8 m</div><div class="number-label">Hauteur moyenne</div></div>
+            <div class="number-card reveal reveal-delay-4"><div class="number-value">25 000+</div><div class="number-label">Tours de guet</div></div>
+        </div>
+
+        <div class="section-title reveal">Éléments architecturaux</div>
+        <div class="history-sections">
+            <div class="history-card reveal reveal-delay-1">
+                <img src="architecture.jpg" alt="Tour de guet" class="history-image-real">
+                <div class="history-label">Tours de guet</div>
+                <div class="history-description">Disposées tous les 90 à 180 mètres, elles servaient de postes d'observation, de casernes et de dépôts de provisions.</div>
+            </div>
+            <div class="history-card reveal reveal-delay-2">
+                <img src="materiaux.jpg" alt="Matériaux" class="history-image-real">
+                <div class="history-label">Matériaux</div>
+                <div class="history-description">Terre battue, pierres locales, briques cuites liées au mortier de chaux et riz gluant. Le choix variait selon les ressources de chaque région.</div>
+            </div>
+            <div class="history-card reveal reveal-delay-3">
+                <img src="forteresse.jpg" alt="Forteresse" class="history-image-real">
+                <div class="history-label">Forteresses & Passes</div>
+                <div class="history-description">Points de contrôle stratégiques comme Shanhaiguan à l'est et Jiayuguan à l'ouest. Ces portes commandaient l'accès à l'empire.</div>
+            </div>
+            <div class="history-card reveal reveal-delay-1">
+                <img src="postes.jpg" alt="Postes de signal" class="history-image-real">
+                <div class="history-label">Postes de signal</div>
+                <div class="history-description">Système de communication par signaux de fumée et de feu permettant de transmettre des alertes sur des centaines de km en quelques heures.</div>
+            </div>
+            <div class="history-card reveal reveal-delay-2">
+                <img src="chemin.png" alt="Chemin de ronde" class="history-image-real">
+                <div class="history-label">Chemin de ronde</div>
+                <div class="history-description">Le sommet du mur, large de 4 à 5 mètres, permettait à plusieurs cavaliers de se croiser. Pavé de briques pour faciliter la marche.</div>
+            </div>
+            <div class="history-card reveal reveal-delay-3">
+                <img src="drainage.png" alt="Drainage" class="history-image-real">
+                <div class="history-label">Drainage</div>
+                <div class="history-description">Des gargouilles et canalisations intégrées dans la structure permettaient d'évacuer les eaux de pluie et d'éviter l'érosion des murs.</div>
+            </div>
+        </div>
+
+        <div class="section-title reveal">Évolution architecturale par dynastie</div>
+        <section class="timeline-section">
+            <div class="timeline-item reveal">
+                <div><div class="timeline-period">221-206 av. J.-C.</div><div class="timeline-dynasty">Dynastie Qin</div></div>
+                <div class="timeline-content"><div class="timeline-title">Terre battue & Pierre</div><div class="timeline-text">Construction rapide avec les matériaux locaux. La terre battue est compactée entre des planches de bois. Priorité à la longueur sur la solidité.</div></div>
+                <img src="window-view.jpg" alt="Architecture Qin" class="timeline-image">
+            </div>
+            <div class="timeline-item reveal">
+                <div><div class="timeline-period">206 av. J.-C. - 220</div><div class="timeline-dynasty">Dynastie Han</div></div>
+                <div class="timeline-content"><div class="timeline-title">Extension vers l'ouest</div><div class="timeline-text">Utilisation de roseaux et peupliers dans les zones désertiques. Innovation avec les tours de signal pour une communication rapide sur de longues distances.</div></div>
+                <img src="sunset-silhouette.jpg" alt="Architecture Han" class="timeline-image">
+            </div>
+            <div class="timeline-item reveal">
+                <div><div class="timeline-period">1368 - 1644</div><div class="timeline-dynasty">Dynastie Ming</div></div>
+                <div class="timeline-content"><div class="timeline-title">Briques & Perfection</div><div class="timeline-text">Âge d'or de la construction. Introduction massive des briques cuites liées au mortier de chaux et riz gluant. Tours de guet massives et sophistiquées.</div></div>
+                <img src="architecture-detail.jpg" alt="Architecture Ming" class="timeline-image">
+            </div>
+        </section>
+
+        <section class="story-map-section reveal">
+            <div class="section-title">Exploration Immersive des Tronçons</div>
+            <div class="story-map-container">
+                <nav class="map-menu">
+                    <button class="map-tab is-active" data-target="iframe-badaling"><span class="tab-number">01</span> Badaling</button>
+                    <button class="map-tab" data-target="iframe-mutianyu"><span class="tab-number">02</span> Mutianyu</button>
+                    <button class="map-tab" data-target="iframe-simatai"><span class="tab-number">03</span> Simatai</button>
+                    <button class="map-tab" data-target="iframe-jiankou"><span class="tab-number">04</span> Jiankou</button>
+                </nav>
+                <div class="story-visual">
+                    <div id="iframe-badaling" class="map-layer is-visible">
+                        <iframe src="https://www.google.com/maps/embed?pb=!4v1774978895499!6m8!1m7!1sCAoSF0NJSE0wb2dLRUlDQWdJQzRoN0hhbWdF!2m2!1d40.34982700305588!2d116.0080720238139!3f169.18136062870263!4f-14.865593115739728!5f0.7820865974627469" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div id="iframe-mutianyu" class="map-layer">
+                        <iframe src="https://www.google.com/maps/embed?pb=!4v1774979463065!6m8!1m7!1sCAoSHENJQUJJaEFtRk14U28xTDJlQXl1RXBXRjZrMko.!2m2!1d40.43279440135292!2d116.5639239603304!3f3.8024880980594844!4f-26.54468410284315!5f0.7820865974627469" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div id="iframe-simatai" class="map-layer">
+                        <iframe src="https://www.google.com/maps/embed?pb=!4v1774979592954!6m8!1m7!1sCAoSFkNJSE0wb2dLRUlDQWdJRDh4SWoyQWc.!2m2!1d40.65480398347007!2d117.2787700282047!3f6.524772361952776!4f-39.717700165640075!5f0.4000000000000002" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div id="iframe-jiankou" class="map-layer">
+                        <iframe src="https://www.google.com/maps/embed?pb=!4v1774979656178!6m8!1m7!1sCAoSFkNJSE0wb2dLRUlDQWdJQ0t6Ym1hWmc.!2m2!1d40.46264601348925!2d116.512172009235!3f118.15063118834294!4f-21.398163131438352!5f0.7820865974627469" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column"><h3>Liens utiles</h3><ul><li><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener">Site officiel de l'UNESCO</a></li><li><a href="visiter.html">Planifier sa visite</a></li>
+                    <li><a href="apropos.html">L’équipe M.C.N.</a></li></ul></div>
+            <div class="footer-column"><h3>Informations</h3><ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="politique-confidentialite.html">Politique de confidentialité</a></li></ul></div>
+            <div class="footer-column"><h3>Contact</h3><p style="margin-bottom:12px;font-size:13px;color:#b0b0b0;">Une question sur le projet ou la Muraille ?</p><a href="mailto:contact@muraille-mcn.fr" class="no-arrow" style="text-decoration:none;"><button class="contact-btn">✉️ Nous contacter</button></a></div>
+        </div>
+        <div class="footer-unesco-container"><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener" class="unesco-link no-arrow"><div class="unesco-logo-footer"><span class="unesco-icon">🏛️</span><span class="unesco-text">UNESCO</span></div></a></div>
+        <div class="footer-bottom"><p>© 2026 Projet M.C.N. × UNESCO — Tous droits réservés</p></div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="Retour en haut">↑</a>
+
+    <div class="premium-dock" aria-label="Outils rapides">
+        <button class="dock-btn" type="button" data-command="search" aria-label="Recherche intelligente">⌘</button>
+        <div class="lang-dock-group">
+        <button class="dock-btn lang-btn" type="button" data-lang="fr" aria-label="Passer en français">FR</button>
+        <button class="dock-btn lang-btn" type="button" data-lang="en" aria-label="Switch to English">EN</button>
+      </div>
+        <button class="dock-btn" type="button" data-command="sound" aria-label="Ambiance sonore">♪</button>
+    </div>
+    <div class="command-panel" role="dialog" aria-modal="false" aria-label="Recherche rapide">
+        <div class="command-card">
+            <button class="command-close" type="button" aria-label="Fermer">×</button>
+            <span class="eyebrow">M.C.N. / Recherche curatoriale</span>
+            <h2>Explorer la Muraille en un instant</h2>
+            <input id="smart-search" type="search" placeholder="Essayez : Badaling, riz gluant, UNESCO, Ming..." autocomplete="off">
+            <div class="command-results" aria-live="polite"></div>
+        </div>
+    </div>
+    <div class="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de confidentialité">
+        <div><strong>Expérience immersive</strong><p>Nous utilisons uniquement des préférences locales pour retenir la langue, l'accessibilité et l'ambiance. Aucun traçage publicitaire.</p></div>
+        <button type="button" class="cookie-accept">Accepter l'expérience</button>
+    </div>
+    <script src="main.js"></script>
+    <script src="premium_upgrade.js"></script>
+    <script src="mcn_public_final.js"></script>
+    <script src="mcn_premium_finish.js"></script>
+    <script src="dynasty_deep.js"></script>
+    <script src="lang_fix.js"></script>
+    <script src="mcn_v4_final_patch.js"></script>
+    <script src="mcn_v5_final_patch.js"></script>
+    <script src="mcn_v10.js"></script>
+    <script src="mcn_v11_final_patch.js"></script>
+</body>
+</html>

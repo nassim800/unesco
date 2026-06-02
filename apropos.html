@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Boot immédiat : lang + daltonien + musique préchargée -->
+    <script>
+      (function(){
+        // 1. Langue
+        var l = localStorage.getItem('mcn-lang');
+        if(l === 'en'){ document.documentElement.lang = 'en'; document.documentElement.classList.add('is-english'); }
+        // 2. Daltonien
+        if(localStorage.getItem('mcn-colorblind') === '1') document.documentElement.classList.add('mcn-colorblind');
+        // 3. Musique — play immédiat, seek différé pour éviter le gap entre pages
+        if(localStorage.getItem('mcn-music-on') === '1') {
+          try {
+            var savedTime = parseFloat(localStorage.getItem('mcn-music-time') || '0');
+            var savedAt   = parseFloat(localStorage.getItem('mcn-music-savedAt') || String(Date.now()));
+            var audio = new Audio('nastelbom_chinese-music.mp3');
+            audio.loop    = true;
+            audio.volume  = 0.55;
+            audio.preload = 'auto';
+            function doSeek(){
+              var elapsed = (Date.now() - savedAt) / 1000;
+              var target  = savedTime + elapsed;
+              if(audio.duration && isFinite(audio.duration)) target = target % audio.duration;
+              try { audio.currentTime = target; } catch(e){}
+            }
+            // Jouer IMMÉDIATEMENT (sans attendre canplay) pour éviter le gap
+            var playPromise = audio.play();
+            if(playPromise !== undefined){
+              playPromise.then(function(){
+                // Seek après que le play a démarré
+                if(audio.readyState >= 2){ doSeek(); }
+                else { audio.addEventListener('canplay', doSeek, { once:true }); }
+              }).catch(function(){
+                // Autoplay bloqué — réessayer au premier geste utilisateur
+                var resume = function(){
+                  audio.play().then(doSeek).catch(function(){});
+                  document.removeEventListener('click',   resume);
+                  document.removeEventListener('keydown', resume);
+                };
+                document.addEventListener('click',   resume, { once:true });
+                document.addEventListener('keydown', resume, { once:true });
+              });
+            } else {
+              // Fallback navigateurs anciens
+              if(audio.readyState >= 2){ doSeek(); }
+              else { audio.addEventListener('canplay', doSeek, { once:true }); }
+            }
+            window.__mcnBootAudio = audio;
+          } catch(e) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" as="audio" href="nastelbom_chinese-music.mp3" type="audio/mpeg">
+    <meta name="description" content="Découvrez l'équipe M.C.N. derrière le projet numérique UNESCO dédié à la Grande Muraille de Chine.">
+    <title>À propos — M.C.N. Grande Muraille</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium_upgrade.css">
+    <link rel="stylesheet" href="mcn_public_refinement.css">
+    <link rel="stylesheet" href="mcn_premium_finish.css">
+    <link rel="stylesheet" href="dynasty_modal_enhance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-premium="mcn">
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <div class="progress-bar" aria-hidden="true"></div>
+    <input type="checkbox" id="daltonien-mode" class="mode-checkbox">
+    <input type="checkbox" id="hamburger-toggle" class="hamburger-toggle">
+    <label for="hamburger-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" class="logo-link" aria-label="Retour à l'accueil">
+                    <img src="logo-mcn.png" alt="Logo M.C.N." class="logo-img">
+                </a>
+            </div>
+            <div class="color-mode-toggle">
+                <label for="daltonien-mode" class="mode-button mode-normal">Normal</label>
+                <label for="daltonien-mode" class="mode-button mode-daltonien">Daltonien</label>
+            </div>
+            <label for="hamburger-toggle" class="hamburger-label" aria-label="Ouvrir le menu"><span></span><span></span><span></span></label>
+            <nav aria-label="Navigation principale">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="histoire.html">Histoire</a></li>
+                    <li><a href="architecture.html">Architecture & Sites</a></li>
+                    <li><a href="preservation.html">Préservation & UNESCO</a></li>
+                    <li><a href="visiter.html">Visiter</a></li>
+                    <li><a href="apropos.html" class="active" aria-current="page">À propos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="contenu" class="main-content about-page">
+        <section class="about-hero about-hero-centered reveal" aria-labelledby="about-title">
+            <span class="mcn-chapter-kicker">M.C.N. / Médiation Culturelle & Numérique</span>
+            <h1 id="about-title"><span class="lang-fr">L'équipe derrière <em>l'expérience</em></span><span class="lang-en">The team behind <em>the experience</em></span></h1>
+            <p>Nous avons imaginé ce prototype comme une réponse professionnelle à un appel d'offres culturel : un site immersif, accessible et international pour promouvoir la Grande Muraille de Chine, rendre sa culture plus lisible et transformer la visite en parcours numérique.</p>
+            <p class="about-feedback-copy">Votre avis nous aide à améliorer la navigation, les contenus, l'accessibilité et la qualité générale de l'expérience.</p>
+            <div class="about-hero-actions about-centered-actions">
+                <a class="premium-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSeU9tLcjti7JMCrcqC1mMCmVSFQuOG7TDobUYqRKVTLNibkOA/viewform?usp=publish-editor" target="_blank" rel="noopener">Donner son avis</a>
+                <a href="#team" class="ghost-cta">Découvrir les profils</a>
+                <a href="#contact" class="ghost-cta">Contacter l'équipe</a>
+            </div>
+        </section>
+
+        <section id="team" class="team-section reveal" aria-labelledby="team-title">
+            <div class="section-heading about-centered-heading">
+                <span class="eyebrow">Équipe projet</span>
+                <h2 id="team-title"><span class="lang-fr"><span>4 profils</span> complémentaires</span><span class="lang-en"><span>4 profiles</span><br>complementary</span></h2>
+                <p><span class="lang-fr">Quatre rôles complémentaires structurent le prototype : direction technique, cohérence culturelle, interactions et finition responsive.</span><span class="lang-en">Four complementary roles structure the prototype: technical direction, cultural consistency, interactions and responsive finishing.</span></p>
+            </div>
+            <div class="team-grid team-grid-real team-grid-compact">
+                <article class="profile-card profile-card-real">
+                    <div class="profile-photo-wrap"><img src="nassim-lahouel.jpg" alt="Portrait de Nassim Lahouel" class="profile-photo"></div>
+                    <div class="profile-body">
+                        <span class="profile-role">Direction technique · HTML/CSS/JS</span>
+                        <h3>Nassim Lahouel</h3>
+                        <p>Coordination du projet, architecture du site, intégration principale et cohérence de l'expérience utilisateur.</p>
+                        <div class="profile-links social-icons" aria-label="Liens professionnels de Nassim Lahouel">
+                            <a href="https://github.com/nassim800" target="_blank" rel="noopener" aria-label="GitHub de Nassim Lahouel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.3 11.3 0 0 0 .7 12c0 5 3.2 9.2 7.6 10.7.6.1.8-.2.8-.6v-2c-3.1.7-3.8-1.3-3.8-1.3-.5-1.2-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.5-.3-5.1-1.2-5.1-5.5 0-1.2.4-2.2 1.2-3-.1-.3-.5-1.5.1-3 0 0 .9-.3 3.1 1.2.9-.2 1.9-.4 2.9-.4s2 .1 2.9.4c2.2-1.5 3.1-1.2 3.1-1.2.6 1.5.2 2.7.1 3 .7.8 1.2 1.8 1.2 3 0 4.3-2.6 5.2-5.1 5.5.4.3.8 1 .8 2.1V22c0 .4.2.7.8.6A11.3 11.3 0 0 0 12 .7Z"/></svg></a>
+                            <a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn de Nassim Lahouel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5.01 2.5 2.5 0 0 1 0-5.01ZM3 9.5h4v11.8H3V9.5Zm6.3 0h3.8v1.6h.1c.5-.9 1.8-1.9 3.8-1.9 4 0 4.7 2.6 4.7 6v6.1h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.5h-4V9.5Z"/></svg></a>
+                            <a href="https://nassim800.github.io/portfolio2/" target="_blank" rel="noopener" aria-label="Portfolio de Nassim Lahouel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1.2 2H21a2 2 0 0 1 2 2v11.5a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 1 18.5V7a2 2 0 0 1 2-2h4.8L9 3Zm1.2 2-.7 1.1a2 2 0 0 1-1.7.9H3v11.5c0 .3.2.5.5.5h17c.3 0 .5-.2.5-.5V7h-4.8a2 2 0 0 1-1.7-.9L13.8 5h-3.6ZM12 9a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg></a>
+                        </div>
+                    </div>
+                </article>
+                <article class="profile-card profile-card-real">
+                    <div class="profile-photo-wrap"><img src="zian-xu.jpg" alt="Portrait de Zian Xu" class="profile-photo"></div>
+                    <div class="profile-body">
+                        <span class="profile-role">Cohérence culturelle · HTML/CSS</span>
+                        <h3>Zian Xu</h3>
+                        <p>Vérification culturelle, précision des contenus historiques et contribution à la structure éditoriale du site.</p>
+                        <div class="profile-links social-icons" aria-label="Liens professionnels de Zian Xu">
+                            <a href="https://github.com/zian-boop" target="_blank" rel="noopener" aria-label="GitHub de Zian Xu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.3 11.3 0 0 0 .7 12c0 5 3.2 9.2 7.6 10.7.6.1.8-.2.8-.6v-2c-3.1.7-3.8-1.3-3.8-1.3-.5-1.2-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.5-.3-5.1-1.2-5.1-5.5 0-1.2.4-2.2 1.2-3-.1-.3-.5-1.5.1-3 0 0 .9-.3 3.1 1.2.9-.2 1.9-.4 2.9-.4s2 .1 2.9.4c2.2-1.5 3.1-1.2 3.1-1.2.6 1.5.2 2.7.1 3 .7.8 1.2 1.8 1.2 3 0 4.3-2.6 5.2-5.1 5.5.4.3.8 1 .8 2.1V22c0 .4.2.7.8.6A11.3 11.3 0 0 0 12 .7Z"/></svg></a>
+                            <a href="https://www.linkedin.com/in/%E5%AD%90%E5%AE%89-%E5%BE%90-6149aa3a8/?locale=fr" target="_blank" rel="noopener" aria-label="LinkedIn de Zian Xu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5.01 2.5 2.5 0 0 1 0-5.01ZM3 9.5h4v11.8H3V9.5Zm6.3 0h3.8v1.6h.1c.5-.9 1.8-1.9 3.8-1.9 4 0 4.7 2.6 4.7 6v6.1h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.5h-4V9.5Z"/></svg></a>
+                            <a href="https://zian-boop.github.io/" target="_blank" rel="noopener" aria-label="Portfolio de Zian Xu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1.2 2H21a2 2 0 0 1 2 2v11.5a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 1 18.5V7a2 2 0 0 1 2-2h4.8L9 3Zm1.2 2-.7 1.1a2 2 0 0 1-1.7.9H3v11.5c0 .3.2.5.5.5h17c.3 0 .5-.2.5-.5V7h-4.8a2 2 0 0 1-1.7-.9L13.8 5h-3.6ZM12 9a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg></a>
+                        </div>
+                    </div>
+                </article>
+                <article class="profile-card profile-card-real">
+                    <div class="profile-photo-wrap"><img src="djibril.jpg" alt="Portrait de Djibril Oubouzid" class="profile-photo"></div>
+                    <div class="profile-body">
+                        <span class="profile-role">Interactions · CSS/JS</span>
+                        <h3>Djibril Oubouzid</h3>
+                        <p>Développement des interactions, amélioration des composants dynamiques et fluidité des parcours.</p>
+                        <div class="profile-links social-icons" aria-label="Liens professionnels de Djibril Oubouzid">
+                            <a href="https://github.com/skerious" target="_blank" rel="noopener" aria-label="GitHub de Djibril Oubouzid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.3 11.3 0 0 0 .7 12c0 5 3.2 9.2 7.6 10.7.6.1.8-.2.8-.6v-2c-3.1.7-3.8-1.3-3.8-1.3-.5-1.2-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.5-.3-5.1-1.2-5.1-5.5 0-1.2.4-2.2 1.2-3-.1-.3-.5-1.5.1-3 0 0 .9-.3 3.1 1.2.9-.2 1.9-.4 2.9-.4s2 .1 2.9.4c2.2-1.5 3.1-1.2 3.1-1.2.6 1.5.2 2.7.1 3 .7.8 1.2 1.8 1.2 3 0 4.3-2.6 5.2-5.1 5.5.4.3.8 1 .8 2.1V22c0 .4.2.7.8.6A11.3 11.3 0 0 0 12 .7Z"/></svg></a>
+                            <a href="https://www.linkedin.com/in/djibril-oubouzid-376926398/" target="_blank" rel="noopener" aria-label="LinkedIn de Djibril Oubouzid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5.01 2.5 2.5 0 0 1 0-5.01ZM3 9.5h4v11.8H3V9.5Zm6.3 0h3.8v1.6h.1c.5-.9 1.8-1.9 3.8-1.9 4 0 4.7 2.6 4.7 6v6.1h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.5h-4V9.5Z"/></svg></a>
+                            <a href="https://skerious.github.io/djibril_portfolio/" target="_blank" rel="noopener" aria-label="Portfolio de Djibril Oubouzid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1.2 2H21a2 2 0 0 1 2 2v11.5a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 1 18.5V7a2 2 0 0 1 2-2h4.8L9 3Zm1.2 2-.7 1.1a2 2 0 0 1-1.7.9H3v11.5c0 .3.2.5.5.5h17c.3 0 .5-.2.5-.5V7h-4.8a2 2 0 0 1-1.7-.9L13.8 5h-3.6ZM12 9a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg></a>
+                        </div>
+                    </div>
+                </article>
+                <article class="profile-card profile-card-real">
+                    <div class="profile-photo-wrap"><img src="ali.jpg" alt="Portrait de Ali Khaloui" class="profile-photo"></div>
+                    <div class="profile-body">
+                        <span class="profile-role">Finition responsive · CSS/JS</span>
+                        <h3>Ali Khaloui</h3>
+                        <p>Optimisation des interfaces, ajustements visuels et stabilité responsive des composants interactifs.</p>
+                        <div class="profile-links social-icons" aria-label="Liens professionnels de Ali Khaloui">
+                            <a href="https://github.com/rjali75" target="_blank" rel="noopener" aria-label="GitHub de Ali Khaloui"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.3 11.3 0 0 0 .7 12c0 5 3.2 9.2 7.6 10.7.6.1.8-.2.8-.6v-2c-3.1.7-3.8-1.3-3.8-1.3-.5-1.2-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.5-.3-5.1-1.2-5.1-5.5 0-1.2.4-2.2 1.2-3-.1-.3-.5-1.5.1-3 0 0 .9-.3 3.1 1.2.9-.2 1.9-.4 2.9-.4s2 .1 2.9.4c2.2-1.5 3.1-1.2 3.1-1.2.6 1.5.2 2.7.1 3 .7.8 1.2 1.8 1.2 3 0 4.3-2.6 5.2-5.1 5.5.4.3.8 1 .8 2.1V22c0 .4.2.7.8.6A11.3 11.3 0 0 0 12 .7Z"/></svg></a>
+                            <a href="https://www.linkedin.com/in/ali-khaloui/" target="_blank" rel="noopener" aria-label="LinkedIn de Ali Khaloui"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5.01 2.5 2.5 0 0 1 0-5.01ZM3 9.5h4v11.8H3V9.5Zm6.3 0h3.8v1.6h.1c.5-.9 1.8-1.9 3.8-1.9 4 0 4.7 2.6 4.7 6v6.1h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.5h-4V9.5Z"/></svg></a>
+                            <a href="https://rjali75.github.io/portfolio/" target="_blank" rel="noopener" aria-label="Portfolio de Ali Khaloui"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1.2 2H21a2 2 0 0 1 2 2v11.5a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 1 18.5V7a2 2 0 0 1 2-2h4.8L9 3Zm1.2 2-.7 1.1a2 2 0 0 1-1.7.9H3v11.5c0 .3.2.5.5.5h17c.3 0 .5-.2.5-.5V7h-4.8a2 2 0 0 1-1.7-.9L13.8 5h-3.6ZM12 9a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg></a>
+                        </div>
+                    </div>
+                </article>
+            </div></section>
+
+        <section class="about-donation-callout reveal" aria-labelledby="support-title">
+            <span class="mcn-chapter-kicker">Soutenir le prototype</span>
+            <h2 id="support-title">Faire grandir <em>l'expérience</em></h2>
+            <p>Un soutien permettrait d'améliorer l'hébergement, d'ajouter de vraies API touristiques, d'enrichir les contenus historiques vérifiés et de maintenir les modules d'accessibilité.</p>
+            <div class="about-centered-actions">
+                <a class="premium-cta paypal-cta" href="https://www.paypal.com/donate" target="_blank" rel="noopener">Faire un don</a>
+                <a class="ghost-cta" href="#contact">Nous contacter</a>
+            </div>
+        </section>
+
+        <section class="support-contact-grid reveal" aria-label="Soutien et contact">
+            <article class="support-card">
+                <span class="eyebrow">Soutenir le prototype</span>
+                <h2>Faire un don</h2>
+                <p>Un soutien permettrait d'améliorer l'hébergement, d'ajouter de vraies API touristiques, d'enrichir les contenus multimédias et de maintenir les modules d'accessibilité.</p>
+                <ul class="support-list">
+                    <li>Amélioration de la cartographie et des itinéraires</li>
+                    <li>Ajout de contenus historiques vérifiés</li>
+                    <li>Optimisation mobile et accessibilité renforcée</li>
+                </ul>
+                <div class="paypal-donation-box" aria-label="Paiement sécurisé PayPal">
+                    <img src="paypal-logo.svg" alt="Logo PayPal" class="paypal-logo">
+                    <div>
+                        <strong>Don sécurisé via PayPal</strong>
+                        <span>Don sécurisé — les fonds soutiennent directement le développement du projet.</span>
+                    </div>
+                </div>
+                <div class="donation-actions">
+                    <a class="premium-cta paypal-cta" href="https://www.paypal.com/donate" target="_blank" rel="noopener">Soutenir via PayPal</a>
+                    <a class="ghost-cta" href="mailto:nassim.lahouel1@gmail.com?subject=Soutien%20au%20projet%20M.C.N.">Proposer un partenariat</a>
+                </div>
+            </article>
+
+            <article id="contact" class="contact-panel">
+                <span class="eyebrow">Contact rapide</span>
+                <h2>Écrire à l'équipe</h2>
+                <p>Le formulaire utilise Formspree et transmet le message à l'adresse de contact du projet. Pour améliorer le site en autonomie, vous pouvez aussi <a class="inline-gold-link" href="https://docs.google.com/forms/d/e/1FAIpQLSeU9tLcjti7JMCrcqC1mMCmVSFQuOG7TDobUYqRKVTLNibkOA/viewform?usp=publish-editor" target="_blank" rel="noopener">recenser l’expérience utilisateur</a>.</p>
+                <form class="about-contact-form" action="https://formspree.io/f/xeedzbya" method="POST">
+                    <label>Nom
+                        <input type="text" name="name" placeholder="Votre nom" required>
+                    </label>
+                    <label>Email
+                        <input type="email" name="email" placeholder="votre.email@example.com" required>
+                    </label>
+                    <label>Sujet
+                        <select name="subject" required>
+                            <option value="Question sur le projet">Question sur le projet</option>
+                            <option value="Partenariat">Partenariat</option>
+                            <option value="Bug ou amélioration">Bug ou amélioration</option>
+                            <option value="Soutien / don">Soutien / don</option>
+                        </select>
+                    </label>
+                    <label>Message
+                        <textarea name="message" rows="5" placeholder="Votre message..." required></textarea>
+                    </label>
+                    <input type="hidden" name="_replyto" value="nassim.lahouel1@gmail.com">
+                    <button type="submit" class="premium-cta form-submit">Envoyer le message</button>
+                </form>
+            </article>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Liens utiles</h3>
+                <ul>
+                    <li><a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener">Site officiel de l'UNESCO</a></li>
+                    <li><a href="visiter.html">Planifier sa visite</a></li>
+                    <li><a href="apropos.html">L'équipe M.C.N.</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Informations</h3>
+                <ul>
+                    <li><a href="mentions-legales.html">Mentions légales</a></li>
+                    <li><a href="politique-confidentialite.html">Politique de confidentialité</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <p style="margin-bottom: 12px; font-size: 13px; color: #b0b0b0;">Une question sur le projet ou la Muraille ?</p>
+                <a href="apropos.html#contact" class="no-arrow" style="text-decoration: none;"><button class="contact-btn">✉️ Nous contacter</button></a>
+            </div>
+        </div>
+        <div class="footer-unesco-container">
+            <a href="https://whc.unesco.org/fr/list/438/" target="_blank" rel="noopener" class="unesco-link no-arrow"><div class="unesco-logo-footer"><span class="unesco-icon">🏛️</span><span class="unesco-text">UNESCO</span></div></a>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Projet M.C.N. × UNESCO — Tous droits réservés</p></div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="Retour en haut">↑</a>
+    <div class="premium-dock" aria-label="Outils rapides">
+        <button class="dock-btn" type="button" data-command="search" aria-label="Recherche intelligente">⌘</button>
+        <div class="lang-dock-group">
+        <button class="dock-btn lang-btn" type="button" data-lang="fr" aria-label="Passer en français">FR</button>
+        <button class="dock-btn lang-btn" type="button" data-lang="en" aria-label="Switch to English">EN</button>
+      </div>
+        <button class="dock-btn" type="button" data-command="sound" aria-label="Ambiance sonore">♪</button>
+    </div>
+    <div class="command-panel" role="dialog" aria-modal="false" aria-label="Recherche rapide"><div class="command-card"><button class="command-close" type="button" aria-label="Fermer">×</button><span class="eyebrow">M.C.N. / Recherche curatoriale</span><h2>Explorer la Muraille en un instant</h2><input id="smart-search" type="search" placeholder="Essayez : Badaling, riz gluant, UNESCO, Ming..." autocomplete="off"><div class="command-results" aria-live="polite"></div></div></div>
+    <div class="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de confidentialité"><div><strong>Expérience immersive</strong><p>Nous utilisons uniquement des préférences locales pour retenir la langue, l'accessibilité et l'ambiance. Aucun traçage publicitaire.</p></div><button type="button" class="cookie-accept">Accepter l'expérience</button></div>
+    <script src="main.js"></script>
+    <script src="premium_upgrade.js"></script>
+    <script src="mcn_public_final.js"></script>
+    <script src="mcn_premium_finish.js"></script>
+    <script src="dynasty_deep.js"></script>
+    <script src="lang_fix.js"></script>
+    <script src="mcn_v4_final_patch.js"></script>
+    <script src="mcn_v5_final_patch.js"></script>
+    <script src="mcn_v10.js"></script>
+    <script src="mcn_v11_final_patch.js"></script>
+</body>
+</html>
