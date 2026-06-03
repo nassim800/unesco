@@ -281,7 +281,7 @@
   };
   const DYNASTY_DEEP = {
     XIA: {
-      image: "xia.jpg",
+      image: "xia.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "La Xia reste une dynastie de seuil : entre récit fondateur, archéologie de l'âge du bronze et premières formes d'autorité sur les vallées du fleuve Jaune. Son importance pour la Muraille tient moins à un mur construit qu'à une idée nouvelle : organiser un territoire, maîtriser l'eau et imposer un centre politique.", en: "The Xia stands at a threshold: between founding narrative, Bronze Age archaeology and early forms of authority over the Yellow River valleys. Its importance for the Wall lies less in a built wall than in a new idea: organising territory, controlling water and imposing a political centre." }
@@ -295,7 +295,7 @@
       ]
     },
     SHANG: {
-      image: "shang.jpg",
+      image: "shang.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Les Shang s'imposent dans le nord de la Chine avec des capitales fortifiées, une métallurgie du bronze très avancée et un pouvoir royal structuré autour des rites. Les villes deviennent des centres défensifs autant que politiques.", en: "The Shang rose in northern China with fortified capitals, advanced bronze metallurgy and a royal power structured around ritual. Cities became defensive centres as much as political ones." }
@@ -309,7 +309,7 @@
       ]
     },
     ZHOU: {
-      image: "zhou.jpg",
+      image: "zhou.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Les Zhou établissent un ordre féodal très vaste. Le pouvoir central confie des terres à des lignages alliés, ce qui crée progressivement des principautés puissantes, autonomes et concurrentes.", en: "The Zhou established a vast feudal order. The central power entrusted lands to allied lineages, gradually creating powerful, autonomous and competing principalities." }
@@ -323,7 +323,7 @@
       ]
     },
     ROYAUMES: {
-      image: "royaumes.jpg",
+      image: "royaumes.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Entre grands royaumes rivaux, la guerre devient continue. Qin, Zhao, Yan, Wei et d'autres États fortifient leurs frontières, non seulement contre les voisins chinois, mais aussi contre les peuples nomades du nord.", en: "Among rival kingdoms, warfare became continuous. Qin, Zhao, Yan, Wei and other states fortified their borders, not only against Chinese neighbours but also against northern nomadic peoples." }
@@ -337,7 +337,7 @@
       ]
     },
     QIN: {
-      image: "qin.jpg",
+      image: "qin.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Qin Shi Huang unifie la Chine en 221 av. J.-C. et impose une administration centralisée. La frontière nord devient un enjeu impérial : protéger l'empire neuf contre les Xiongnu et afficher l'autorité du premier empereur.", en: "Qin Shi Huang unified China in 221 BCE and imposed a centralised administration. The northern border became an imperial issue: protecting the new empire against the Xiongnu and displaying the First Emperor's authority." }
@@ -351,7 +351,7 @@
       ]
     },
     HAN: {
-      image: "han.jpg",
+      image: "han.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Les Han reprennent l'héritage Qin mais l'inscrivent dans une politique plus durable. L'empire se consolide, s'étend vers l'ouest et ouvre les routes qui deviendront la Route de la Soie.", en: "The Han inherited Qin structures but embedded them in a longer-lasting policy. The empire consolidated, expanded westward and opened the routes that would become the Silk Road." }
@@ -365,7 +365,7 @@
       ]
     },
     TANG: {
-      image: "tang.jpg",
+      image: "tang.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Les Tang installent l'un des grands âges culturels de la Chine. Capitale cosmopolite, administration solide, échanges internationaux : l'empire préfère souvent la diplomatie, les alliances et les garnisons mobiles aux murs continus.", en: "The Tang created one of China's great cultural ages. A cosmopolitan capital, strong administration and international exchanges meant the empire often preferred diplomacy, alliances and mobile garrisons to continuous walls." }
@@ -379,7 +379,7 @@
       ]
     },
     SONG: {
-      image: "song.jpg",
+      image: "song.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Les Song réunifient une grande partie de la Chine, mais doivent composer avec de puissants voisins au nord, notamment les Liao puis les Jin. L'équilibre militaire devient instable.", en: "The Song reunified much of China but had to deal with powerful northern neighbours, notably the Liao and then the Jin. The military balance became unstable." }
@@ -393,7 +393,7 @@
       ]
     },
     YUAN: {
-      image: "yuan.jpg",
+      image: "yuan.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Fondée par Kubilaï Khan, la dynastie Yuan place la Chine au cœur de l'empire mongol. La frontière nord n'est plus une limite extérieure : elle est intégrée à un espace impérial beaucoup plus vaste.", en: "Founded by Kublai Khan, the Yuan dynasty placed China at the heart of the Mongol empire. The northern frontier was no longer an external limit: it was integrated into a much larger imperial space." }
@@ -407,7 +407,7 @@
       ]
     },
     MING: {
-      image: "ming.jpg",
+      image: "ming.jpeg",
       blocks: [
         { h: { fr: "Apparition", en: "Rise" }, paras: [
           { fr: "Après avoir chassé les Yuan, les Ming doivent protéger la Chine restaurée contre les incursions mongoles. La frontière nord redevient une urgence stratégique et un symbole de souveraineté.", en: "After expelling the Yuan, the Ming had to protect restored China against Mongol incursions. The northern frontier again became a strategic urgency and a symbol of sovereignty." }
@@ -422,7 +422,7 @@
       ]
     },
     "AUJOURD'HUI": {
-      image: "moderne.jpg",
+      image: "moderne.jpeg",
       blocks: [
         { h: { fr: "Patrimoine mondial", en: "World Heritage" }, paras: [
           { fr: "Depuis son inscription UNESCO en 1987, la Muraille est protégée comme un bien de valeur universelle exceptionnelle. Elle n'est plus seulement une frontière militaire : elle est un lieu de mémoire, de recherche, de tourisme et de diplomatie culturelle.", en: "Since its UNESCO listing in 1987, the Wall has been protected as a property of outstanding universal value. It is no longer only a military frontier: it is a place of memory, research, tourism and cultural diplomacy." }

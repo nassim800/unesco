@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const el=$('#sites-real-map'); if(!el || !window.L || el.dataset.ready) return; el.dataset.ready='1';
     const map=L.map(el,{scrollWheelZoom:false,zoomControl:true}).setView([40.50,116.72],9);
     window.__mcnLeafletMap=map;
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.jpeg',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
     window.__mcnMarkers={};
     Object.entries(sections).forEach(([key,s])=>{
       const icon=L.divIcon({className:`mcn-leaflet-marker ${key==='badaling'?'is-active':''}`,iconSize:[18,18],iconAnchor:[9,9]});
